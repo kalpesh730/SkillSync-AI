@@ -21,8 +21,8 @@ SkillSync is an AI-driven Career Intelligence Ecosystem designed to modernize an
 ## Folder Structure 📂
 ```text
 .
-├── backend/          # Express backend application
-├── frontend/         # React frontend application
+├── server/          # Express backend application
+├── client/         # React frontend application
 ├── docs/             # Documentation (PRD, Architecture, RBAC)
 ├── .github/          # GitHub actions and templates
 └── README.md         # Project documentation
@@ -37,18 +37,18 @@ SkillSync is an AI-driven Career Intelligence Ecosystem designed to modernize an
    ```
 2. Install Backend Dependencies:
    ```bash
-   cd backend
+   cd server
    npm install
    ```
 3. Install Frontend Dependencies:
    ```bash
-   cd ../frontend
+   cd ../client
    npm install
    ```
 
 ## Environment Variables 🔐
 
-Create a `.env` file in the `backend` and `frontend` directories based on the provided `.env.example` templates. 
+Create a `.env` file in the `server` and `client` directories based on the provided `.env.example` templates. 
 
 Key backend variables:
 - `PORT`
@@ -60,12 +60,12 @@ Key backend variables:
 
 1. Start the Backend server:
    ```bash
-   cd backend
+   cd server
    npm run dev
    ```
 2. Start the Frontend development server:
    ```bash
-   cd frontend
+   cd client
    npm run dev
    ```
 

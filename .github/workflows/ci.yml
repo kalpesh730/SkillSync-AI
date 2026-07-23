@@ -1,4 +1,7 @@
-name: CI
+name: Documentation CI
+
+# This is a temporary workflow for the architecture and documentation phase of SkillSync.
+# It should be replaced with the production CI once the client/ and server/ applications are created.
 
 on:
   push:
@@ -7,36 +10,49 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  validate-docs:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js (Latest)
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: Install dependencies (Backend)
-      run: if [ -f backend/package.json ]; then cd backend && npm ci; fi
+        node-version: 'latest'
 
-    - name: Run lint (Backend)
-      run: if [ -f backend/package.json ]; then cd backend && npm run lint --if-present; fi
+    - name: Verify docs directory exists
+      run: |
+        if [ ! -d "docs" ]; then
+          echo "Error: docs directory not found!"
+          exit 1
+        fi
+        echo "docs directory verified."
 
-    - name: Run tests (Backend)
-      run: if [ -f backend/package.json ]; then cd backend && npm test --if-present; fi
-      
-    - name: Install dependencies (Frontend)
-      run: if [ -f frontend/package.json ]; then cd frontend && npm ci; fi
+    - name: Verify README.md exists
+      run: |
+        if [ ! -f "README.md" ]; then
+          echo "Error: README.md not found!"
+          exit 1
+        fi
+        echo "README.md verified."
 
-    - name: Run lint (Frontend)
-      run: if [ -f frontend/package.json ]; then cd frontend && npm run lint --if-present; fi
+    - name: Verify LICENSE exists
+      run: |
+        if [ ! -f "LICENSE" ]; then
+          echo "Error: LICENSE not found!"
+          exit 1
+        fi
+        echo "LICENSE verified."
 
-    - name: Run tests (Frontend)
-      run: if [ -f frontend/package.json ]; then cd frontend && npm test --if-present; fi
+    - name: Verify .github directory exists
+      run: |
+        if [ ! -d ".github" ]; then
+          echo "Error: .github directory not found!"
+          exit 1
+        fi
+        echo ".github directory verified."
+
+    - name: Print Success
+      run: echo "Documentation validation passed."
