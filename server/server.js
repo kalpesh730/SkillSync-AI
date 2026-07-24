@@ -1,30 +1,39 @@
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import morgan from 'morgan';
-import compression from 'compression';
-import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-
 dotenv.config();
 
-const app = express();
-
-// Middlewares
-app.use(helmet());
-app.use(cors());
-app.use(morgan('dev'));
-app.use(compression());
-app.use(express.json());
-app.use(cookieParser());
-
-// Placeholder route
-app.get('/api/v1/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'SkillSync Server is running!' });
-});
+import app from './app.js';
+import { connectDB } from './config/database.js';
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+let server;
+
+const startServer = async () => {
+  try {
+    await connectDB();
+    server = app.listen(PORT, () => {
+      console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
+
+// Graceful shutdown
+const shutdown = () => {
+  console.log('Shutting down gracefully...');
+  if (server) {
+    server.close(() => {
+      console.log('HTTP server closed.');
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
