@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
 
 /**
  * Generates an Access Token (short-lived)
@@ -6,8 +7,8 @@ import jwt from 'jsonwebtoken';
  * @returns {string} Signed JWT
  */
 export const generateAccessToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+  return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+    expiresIn: env.JWT_ACCESS_EXPIRES || '15m',
   });
 };
 
@@ -17,8 +18,8 @@ export const generateAccessToken = (payload) => {
  * @returns {string} Signed JWT
  */
 export const generateRefreshToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES || '7d',
+  return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
+    expiresIn: env.JWT_REFRESH_EXPIRES || '7d',
   });
 };
 
@@ -28,7 +29,7 @@ export const generateRefreshToken = (payload) => {
  * @returns {Object} Decoded payload
  */
 export const verifyAccessToken = (token) => {
-  return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+  return jwt.verify(token, env.JWT_ACCESS_SECRET);
 };
 
 /**
@@ -37,5 +38,5 @@ export const verifyAccessToken = (token) => {
  * @returns {Object} Decoded payload
  */
 export const verifyRefreshToken = (token) => {
-  return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+  return jwt.verify(token, env.JWT_REFRESH_SECRET);
 };

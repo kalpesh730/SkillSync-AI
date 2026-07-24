@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import { env } from './config/env.js';
 
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
@@ -15,7 +16,7 @@ const app = express();
 // Middlewares
 app.use(helmet());
 app.use(cors({ 
-  origin: process.env.CLIENT_URL || 'http://localhost:5173', 
+  origin: env.CLIENT_URL, 
   credentials: true 
 }));
 app.use(morgan('dev'));

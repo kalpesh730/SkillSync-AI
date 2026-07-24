@@ -1,10 +1,8 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
+import { env } from './config/env.js';
 import app from './app.js';
 import { connectDB } from './config/database.js';
 
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT || 5000;
 
 let server;
 
@@ -12,7 +10,7 @@ const startServer = async () => {
   try {
     await connectDB();
     server = app.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+      console.log(`Server running in ${env.NODE_ENV} mode on port ${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
