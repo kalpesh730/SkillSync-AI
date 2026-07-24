@@ -44,8 +44,12 @@ function App() {
         
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />} />
-          {/* Add more protected routes here */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/student/dashboard" element={<Dashboard />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/college/dashboard" element={<Dashboard />} />
+          <Route path="/company/dashboard" element={<Dashboard />} />
         </Route>
 
         {/* Catch all redirect to root/login */}

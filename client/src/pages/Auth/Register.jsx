@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Loader2, Mail, Lock, User, Briefcase } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { getDashboardRouteByRole } from '../../utils/routeHelpers';
 
 const Register = () => {
   const { register: registerField, handleSubmit, formState: { errors }, watch } = useForm();
@@ -24,8 +25,9 @@ const Register = () => {
     setIsSubmitting(false);
 
     if (result.success) {
+      const userRole = useAuthStore.getState().user?.role;
       toast.success('Account created successfully!');
-      navigate('/'); // Redirect to dashboard
+      navigate(getDashboardRouteByRole(userRole));
     } else {
       toast.error(result.error || 'Failed to register');
     }

@@ -1,7 +1,9 @@
 import React from 'react';
 import { useAuthStore } from '../../store/authStore';
-import { LogOut, User, Mail, Shield } from 'lucide-react';
+import { LogOut, User, Mail, Shield, Upload, BarChart, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import RoleGuard from '../../components/Guards/RoleGuard';
+import { ROLES } from '../../utils/roles';
 
 const Dashboard = () => {
   const { user, logout } = useAuthStore();
@@ -69,6 +71,45 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Role-Based Section Rendering */}
+        <div className="mt-8 space-y-6">
+          <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+            <div className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-blue-400 flex items-center mb-4">
+                <Upload className="w-5 h-5 mr-2" /> Student Actions
+              </h3>
+              <p className="text-gray-300">Upload your latest resume to get AI feedback.</p>
+              <button className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-sm transition-colors">
+                Upload Resume
+              </button>
+            </div>
+          </RoleGuard>
+
+          <RoleGuard allowedRoles={[ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.SUPER_ADMIN]}>
+            <div className="bg-purple-900/20 border border-purple-500/30 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-purple-400 flex items-center mb-4">
+                <BarChart className="w-5 h-5 mr-2" /> Institutional Analytics
+              </h3>
+              <p className="text-gray-300">View placement metrics and cohort performance.</p>
+              <button className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium text-sm transition-colors">
+                View Reports
+              </button>
+            </div>
+          </RoleGuard>
+
+          <RoleGuard allowedRoles={[ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.COMPANY_HR]}>
+            <div className="bg-emerald-900/20 border border-emerald-500/30 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-emerald-400 flex items-center mb-4">
+                <Settings className="w-5 h-5 mr-2" /> Administrator Settings
+              </h3>
+              <p className="text-gray-300">Manage tenant preferences and user access.</p>
+              <button className="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium text-sm transition-colors">
+                Open Settings
+              </button>
+            </div>
+          </RoleGuard>
         </div>
       </div>
     </div>

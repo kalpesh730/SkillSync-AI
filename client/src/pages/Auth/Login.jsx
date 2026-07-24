@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Loader2, Mail, Lock } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { getDashboardRouteByRole } from '../../utils/routeHelpers';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -17,8 +18,9 @@ const Login = () => {
     setIsSubmitting(false);
 
     if (result.success) {
+      const userRole = useAuthStore.getState().user?.role;
       toast.success('Welcome back!');
-      navigate('/'); // Redirect to dashboard
+      navigate(getDashboardRouteByRole(userRole));
     } else {
       toast.error(result.error || 'Failed to login');
     }
