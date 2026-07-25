@@ -5,11 +5,14 @@ import { useAuthStore } from './store/authStore';
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
+import AppLayout from './layouts/AppLayout';
 
 // Pages
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
+import ProfilePage from './features/student/pages/ProfilePage';
+import EditProfilePage from './features/student/pages/EditProfilePage';
 
 function App() {
   const { getCurrentUser, loading } = useAuthStore();
@@ -44,12 +47,16 @@ function App() {
         
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/student/dashboard" element={<Dashboard />} />
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/college/dashboard" element={<Dashboard />} />
-          <Route path="/company/dashboard" element={<Dashboard />} />
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/student/dashboard" element={<Dashboard />} />
+            <Route path="/student/profile" element={<ProfilePage />} />
+            <Route path="/student/profile/edit" element={<EditProfilePage />} />
+            <Route path="/admin/dashboard" element={<Dashboard />} />
+            <Route path="/college/dashboard" element={<Dashboard />} />
+            <Route path="/company/dashboard" element={<Dashboard />} />
+          </Route>
         </Route>
 
         {/* Catch all redirect to root/login */}

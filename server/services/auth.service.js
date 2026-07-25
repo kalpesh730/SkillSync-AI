@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
+import { StudentService } from './student.service.js';
 
 export const registerUser = async (data) => {
   const existingUser = await User.findOne({ email: data.email });
@@ -10,6 +11,13 @@ export const registerUser = async (data) => {
   }
 
   const user = await User.create(data);
+
+  if (user.role === 'STUDENT') {
+    const nameParts = user.name.split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(' ') || ' ';
+    await StudentService.createInitialProfile(user._id, user.tenantId, firstName, lastName, user.email);
+  }
   
   // Convert mongoose document to object and remove password
   const userObj = user.toObject();
