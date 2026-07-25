@@ -4,6 +4,7 @@ import PageContainer from '../../../components/ui/PageContainer';
 import SectionHeader from '../../../components/ui/SectionHeader';
 import ProfileHeader from '../components/ProfileHeader';
 import ProfileCompletionCard from '../components/ProfileCompletionCard';
+import EducationList from '../components/EducationList';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/Card';
 
@@ -88,6 +89,8 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
       </div>
+      
+      <EducationList />
     </PageContainer>
   );
 };
