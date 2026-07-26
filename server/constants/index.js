@@ -38,6 +38,7 @@ export const COLLECTION_NAMES = {
   JOB: 'Job',
   APPLICATION: 'Application',
   RESUME: 'Resume',
+  SKILL: 'Skill',
   AUDIT_LOG: 'AuditLog',
 };
 

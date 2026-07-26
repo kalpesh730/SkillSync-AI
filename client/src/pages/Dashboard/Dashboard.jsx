@@ -4,6 +4,7 @@ import { LogOut, User, Mail, Shield, Upload, BarChart, Settings } from 'lucide-r
 import { useNavigate } from 'react-router-dom';
 import RoleGuard from '../../components/Guards/RoleGuard';
 import { ROLES } from '../../utils/roles';
+import SkillList from '../../components/Skills/SkillList.jsx';
 
 const Dashboard = () => {
   const { user, logout } = useAuthStore();
@@ -84,6 +85,10 @@ const Dashboard = () => {
               <button className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-sm transition-colors">
                 Upload Resume
               </button>
+            </div>
+            
+            <div className="mt-8">
+              <SkillList />
             </div>
           </RoleGuard>
 
