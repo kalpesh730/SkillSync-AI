@@ -34,7 +34,8 @@ export const validateRequest = (schema) => async (req, res, next) => {
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map((e) => ({
+      const validationErrors = error.errors || error.issues || [];
+      const errors = validationErrors.map((e) => ({
         path: e.path.join('.'),
         message: e.message,
       }));

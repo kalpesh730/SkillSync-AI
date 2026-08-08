@@ -16,6 +16,11 @@ import {
   getMySkills,
   getStudentSkillsById
 } from '../controllers/skill.controller.js';
+import {
+  addProject,
+  getMyProjects,
+  getStudentProjectsById
+} from '../controllers/project.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
 import { ROLES } from '../constants/index.js';
@@ -23,6 +28,7 @@ import { validateRequest } from '../validators/common.validator.js';
 import { updateStudentProfileSchema } from '../validators/student.validator.js';
 import { educationSchema } from '../validators/education.validator.js';
 import { skillSchema } from '../validators/skill.validator.js';
+import { projectSchema } from '../validators/project.validator.js';
 
 const router = express.Router();
 
@@ -36,6 +42,8 @@ router.get('/me/education', authorize(ROLES.STUDENT), getMyEducation);
 router.post('/me/education', authorize(ROLES.STUDENT), validateRequest(educationSchema), addEducation);
 router.get('/me/skills', authorize(ROLES.STUDENT), getMySkills);
 router.post('/me/skills', authorize(ROLES.STUDENT), validateRequest(skillSchema), addSkill);
+router.get('/me/projects', authorize(ROLES.STUDENT), getMyProjects);
+router.post('/me/projects', authorize(ROLES.STUDENT), validateRequest(projectSchema), addProject);
 
 router.get(
   '/',
@@ -59,6 +67,12 @@ router.get(
   '/:id/skills',
   authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.RECRUITER),
   getStudentSkillsById
+);
+
+router.get(
+  '/:id/projects',
+  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.RECRUITER),
+  getStudentProjectsById
 );
 
 export default router;

@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes.js';
 import studentRoutes from './routes/student.routes.js';
 import educationRoutes from './routes/education.routes.js';
 import skillRoutes from './routes/skill.routes.js';
+import projectRoutes from './routes/project.routes.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -34,6 +35,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/education', educationRoutes);
 app.use('/api/v1/skills', skillRoutes);
+app.use('/api/v1/projects', projectRoutes);
 
 // Error Handling
 app.use(notFound);

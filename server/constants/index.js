@@ -1,9 +1,9 @@
 export const ROLES = {
-  SUPER_ADMIN: 'Super Admin',
-  COLLEGE_ADMIN: 'College Admin',
-  PLACEMENT_OFFICER: 'Placement Officer',
-  STUDENT: 'Student',
-  RECRUITER: 'Recruiter',
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  COLLEGE_ADMIN: 'COLLEGE_ADMIN',
+  PLACEMENT_OFFICER: 'PLACEMENT_OFFICER',
+  STUDENT: 'STUDENT',
+  RECRUITER: 'RECRUITER',
 };
 
 export const HTTP_STATUS = {
@@ -39,6 +39,7 @@ export const COLLECTION_NAMES = {
   APPLICATION: 'Application',
   RESUME: 'Resume',
   SKILL: 'Skill',
+  PROJECT: 'Project',
   AUDIT_LOG: 'AuditLog',
 };
 
