@@ -5,7 +5,9 @@ import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import { useAuthStore } from '../../../store/authStore';
 import ApplyModal from '../../application/components/ApplyModal';
+import AIAnalysisModal from '../../ai/components/AIAnalysisModal';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 
 const formatTimeAgo = (dateString) => {
   if (!dateString) return '';
@@ -33,6 +35,7 @@ const formatTimeAgo = (dateString) => {
 
 const JobCard = ({ job, canManage, onEdit, onDelete, onUpdateStatus }) => {
   const [isApplyModalOpen, setIsApplyModalOpen] = React.useState(false);
+  const [isAIModalOpen, setIsAIModalOpen] = React.useState(false);
   const { user } = useAuthStore();
   const navigate = useNavigate();
   
@@ -118,6 +121,12 @@ const JobCard = ({ job, canManage, onEdit, onDelete, onUpdateStatus }) => {
             <Button variant="outline" className="flex-1">
               View Details
             </Button>
+            {user?.role === 'STUDENT' && (
+              <Button variant="outline" className="flex-1 text-primary-600 border-primary-200 hover:bg-primary-50" onClick={() => setIsAIModalOpen(true)}>
+                <Sparkles className="w-4 h-4 mr-2" />
+                AI Analysis
+              </Button>
+            )}
             {user?.role === 'STUDENT' && job.status === 'PUBLISHED' && (
               <Button variant="primary" className="flex-1" onClick={() => setIsApplyModalOpen(true)}>
                 Apply Now
@@ -154,6 +163,12 @@ const JobCard = ({ job, canManage, onEdit, onDelete, onUpdateStatus }) => {
           setIsApplyModalOpen(false);
           alert('Application submitted successfully!'); // We could use a toast here
         }}
+      />
+
+      <AIAnalysisModal
+        job={job}
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
       />
     </Card>
   );
