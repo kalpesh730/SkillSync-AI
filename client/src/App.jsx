@@ -15,6 +15,8 @@ import ProfilePage from './features/student/pages/ProfilePage';
 import EditProfilePage from './features/student/pages/EditProfilePage';
 import CompanyProfile from './features/company/pages/CompanyProfile';
 import JobsPage from './features/job/pages/JobsPage';
+import ApplicationsPage from './features/application/pages/ApplicationsPage';
+import JobApplicationsPage from './features/application/pages/JobApplicationsPage';
 
 function App() {
   const { getCurrentUser, loading } = useAuthStore();
@@ -60,6 +62,8 @@ function App() {
             <Route path="/company/dashboard" element={<Dashboard />} />
             <Route path="/companies" element={<CompanyProfile />} />
             <Route path="/jobs" element={<JobsPage />} />
+            <Route path="/jobs/:jobId/applications" element={<JobApplicationsPage />} />
+            <Route path="/applications" element={<ApplicationsPage />} />
           </Route>
         </Route>
 

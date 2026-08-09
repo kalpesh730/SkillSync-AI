@@ -3,6 +3,9 @@ import { Briefcase, DollarSign, MapPin, Clock } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
+import { useAuthStore } from '../../../store/authStore';
+import ApplyModal from '../../application/components/ApplyModal';
+import { useNavigate } from 'react-router-dom';
 
 const formatTimeAgo = (dateString) => {
   if (!dateString) return '';
@@ -29,6 +32,10 @@ const formatTimeAgo = (dateString) => {
 };
 
 const JobCard = ({ job, canManage, onEdit, onDelete, onUpdateStatus }) => {
+  const [isApplyModalOpen, setIsApplyModalOpen] = React.useState(false);
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+  
   const getStatusColor = (status) => {
     switch (status) {
       case 'PUBLISHED': return 'success';
@@ -107,11 +114,21 @@ const JobCard = ({ job, canManage, onEdit, onDelete, onUpdateStatus }) => {
 
       <div className="flex space-x-3 mt-4 pt-4 border-t border-gray-100">
         {!canManage ? (
-          <Button variant="primary" className="w-full">
-            View Details
-          </Button>
+          <>
+            <Button variant="outline" className="flex-1">
+              View Details
+            </Button>
+            {user?.role === 'STUDENT' && job.status === 'PUBLISHED' && (
+              <Button variant="primary" className="flex-1" onClick={() => setIsApplyModalOpen(true)}>
+                Apply Now
+              </Button>
+            )}
+          </>
         ) : (
           <>
+            <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate(`/jobs/${job._id}/applications`)}>
+              View Applicants
+            </Button>
             <Button variant="outline" size="sm" className="flex-1" onClick={() => onEdit(job)}>
               Edit
             </Button>
@@ -128,6 +145,16 @@ const JobCard = ({ job, canManage, onEdit, onDelete, onUpdateStatus }) => {
           </>
         )}
       </div>
+      
+      <ApplyModal 
+        job={job}
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        onSuccess={() => {
+          setIsApplyModalOpen(false);
+          alert('Application submitted successfully!'); // We could use a toast here
+        }}
+      />
     </Card>
   );
 };
