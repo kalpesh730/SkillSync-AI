@@ -40,6 +40,7 @@ export const COLLECTION_NAMES = {
   RESUME: 'Resume',
   SKILL: 'Skill',
   PROJECT: 'Project',
+  CERTIFICATION: 'Certification',
   AUDIT_LOG: 'AuditLog',
 };
 
