@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, Trash2, Github, ExternalLink, Calendar, Code, User, Briefcase } from 'lucide-react';
+import { Edit2, Trash2, Code2, ExternalLink, Calendar, Code, User, Briefcase } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 
 const ProjectCard = ({ project, onEdit, onDelete, editable = true }) => {
@@ -57,7 +57,7 @@ const ProjectCard = ({ project, onEdit, onDelete, editable = true }) => {
             <div className="mt-4 flex gap-4 text-sm font-medium">
               {project.githubUrl && (
                 <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-                  <Github className="w-4 h-4 mr-1.5" />
+                  <Code2 className="w-4 h-4 mr-1.5" />
                   Source Code
                 </a>
               )}
