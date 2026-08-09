@@ -23,7 +23,12 @@ export const registerUser = async (data) => {
   const userObj = user.toObject();
   delete userObj.password;
 
-  const accessToken = generateAccessToken({ id: user._id, role: user.role, tenantId: user.tenantId });
+  const accessToken = generateAccessToken({ 
+    id: user._id, 
+    role: user.role, 
+    tenantId: user.tenantId,
+    companyId: user.companyId
+  });
   const refreshToken = generateRefreshToken({ id: user._id });
 
   return { user: userObj, accessToken, refreshToken };
@@ -47,7 +52,12 @@ export const loginUser = async (email, password) => {
   const userObj = user.toObject();
   delete userObj.password;
 
-  const accessToken = generateAccessToken({ id: user._id, role: user.role, tenantId: user.tenantId });
+  const accessToken = generateAccessToken({ 
+    id: user._id, 
+    role: user.role, 
+    tenantId: user.tenantId,
+    companyId: user.companyId
+  });
   const refreshToken = generateRefreshToken({ id: user._id });
 
   return { user: userObj, accessToken, refreshToken };
@@ -69,7 +79,12 @@ export const refreshUserToken = async (token) => {
       throw error;
     }
 
-    const accessToken = generateAccessToken({ id: user._id, role: user.role, tenantId: user.tenantId });
+    const accessToken = generateAccessToken({ 
+      id: user._id, 
+      role: user.role, 
+      tenantId: user.tenantId,
+      companyId: user.companyId 
+    });
     return { accessToken };
   } catch (err) {
     const error = new Error('Invalid or expired refresh token');

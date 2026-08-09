@@ -1,0 +1,20 @@
+export const JOB_STATUS = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  CLOSED: 'CLOSED',
+  ARCHIVED: 'ARCHIVED',
+};
+
+export const EMPLOYMENT_TYPE = [
+  'FULL_TIME',
+  'PART_TIME',
+  'CONTRACT',
+  'INTERNSHIP',
+  'FREELANCE',
+];
+
+export const WORKPLACE_TYPE = [
+  'ON_SITE',
+  'HYBRID',
+  'REMOTE',
+];

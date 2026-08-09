@@ -15,6 +15,8 @@ import skillRoutes from './routes/skill.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import certificationRoutes from './routes/certification.routes.js';
 import resumeRoutes from './routes/resume.routes.js';
+import companyRoutes from './routes/company.routes.js';
+import jobRoutes from './routes/job.routes.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -43,6 +45,8 @@ app.use('/api/v1/skills', skillRoutes);
 app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/certifications', certificationRoutes);
 app.use('/api/v1/resumes', resumeRoutes);
+app.use('/api/v1/companies', companyRoutes);
+app.use('/api/v1/jobs', jobRoutes);
 
 // Error Handling
 app.use(notFound);

@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'College', // Referencing College as per docs (colleges collection)
     },
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Company',
+    },
     profileCompleted: {
       type: Boolean,
       default: false,
@@ -54,6 +58,7 @@ const userSchema = new mongoose.Schema(
 // Add indexes for common queries
 userSchema.index({ role: 1 });
 userSchema.index({ tenantId: 1 });
+userSchema.index({ companyId: 1 });
 userSchema.index({ isActive: 1 });
 
 // Pre-save hook to hash password

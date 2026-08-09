@@ -1,0 +1,20 @@
+export const COMPANY_SIZES = [
+  '1-10',
+  '11-50',
+  '51-200',
+  '201-500',
+  '501-1000',
+  '1001-5000',
+  '5000+',
+];
+
+export const COMPANY_VERIFICATION_STATUS = {
+  PENDING: 'PENDING',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+};
+
+export const COMPANY_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+};
