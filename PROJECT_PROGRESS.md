@@ -2,32 +2,16 @@
 
 ## ✅ Completed
 
-- Foundation
-- Authentication
-- RBAC
-- Multi-Tenant
-- Core Platform
-- Student Identity
-- Student Education
-- Student Skills
-- Student Projects
-  - Backend model
-  - Validation
-  - Repository
-  - Service
-  - Controller
-  - Routes
-  - RBAC
-  - Tenant isolation
-  - Frontend API
-  - Zustand store
-  - Project Form
-  - Project Card
-  - Project List
-  - Search
-  - Filtering
-  - Sorting
-  - CRUD verification
+- Epic 1 — Student Identity/Profile
+- Epic 2 — Student Education
+- Epic 3 — Student Skills
+- Epic 4 — Student Projects
+- Epic 5 — Student Certifications
+- Epic 6 — Resume + AI Parsing
+- Epic 7 — Company + Jobs
+- Epic 8 — Applications / Placement
+- Epic 9 — AI Career Intelligence
+- Epic 10 — Analytics + Production Polish
 
 ## 🚧 In Progress
 
@@ -35,13 +19,4 @@
 
 ## ⏳ Upcoming
 
-- Student Certifications
-- Resume Management
-- Placement Dashboard
-- Company Module
-- Recruiter Module
-- Jobs
-- Applications
-- AI Engine
-- Analytics
-- Deployment
+- Production Deployment

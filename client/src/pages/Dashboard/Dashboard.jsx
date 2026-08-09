@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import RoleGuard from '../../components/Guards/RoleGuard';
 import { ROLES } from '../../utils/roles';
 import SkillList from '../../components/Skills/SkillList.jsx';
+import StudentDashboard from '../../features/analytics/components/StudentDashboard';
+import RecruiterDashboard from '../../features/analytics/components/RecruiterDashboard';
+import CollegeAdminDashboard from '../../features/analytics/components/CollegeAdminDashboard';
 
 const Dashboard = () => {
   const { user, logout } = useAuthStore();
@@ -77,7 +80,11 @@ const Dashboard = () => {
         {/* Role-Based Section Rendering */}
         <div className="mt-8 space-y-6">
           <RoleGuard allowedRoles={[ROLES.STUDENT]}>
-            <div className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-6">
+            <div className="mb-6">
+              <StudentDashboard />
+            </div>
+            
+            <div className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-6 mb-6 hidden">
               <h3 className="text-lg font-semibold text-blue-400 flex items-center mb-4">
                 <Upload className="w-5 h-5 mr-2" /> Student Actions
               </h3>
@@ -86,21 +93,17 @@ const Dashboard = () => {
                 Upload Resume
               </button>
             </div>
-            
-            <div className="mt-8">
-              <SkillList />
-            </div>
           </RoleGuard>
 
           <RoleGuard allowedRoles={[ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.SUPER_ADMIN]}>
-            <div className="bg-purple-900/20 border border-purple-500/30 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-purple-400 flex items-center mb-4">
-                <BarChart className="w-5 h-5 mr-2" /> Institutional Analytics
-              </h3>
-              <p className="text-gray-300">View placement metrics and cohort performance.</p>
-              <button className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium text-sm transition-colors">
-                View Reports
-              </button>
+            <div className="mb-6">
+              <CollegeAdminDashboard />
+            </div>
+          </RoleGuard>
+
+          <RoleGuard allowedRoles={[ROLES.COMPANY_HR, ROLES.RECRUITER]}>
+            <div className="mb-6">
+              <RecruiterDashboard />
             </div>
           </RoleGuard>
 

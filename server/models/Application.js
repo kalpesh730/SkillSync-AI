@@ -97,6 +97,10 @@ applicationSchema.index({ studentId: 1, status: 1 });
 // Ensure a student can only have one active application per job.
 // We only consider non-deleted applications. 
 applicationSchema.index({ studentId: 1, jobId: 1 }, { unique: true, partialFilterExpression: { isDeleted: false } });
+applicationSchema.index({ tenantId: 1, studentId: 1 });
+applicationSchema.index({ tenantId: 1, jobId: 1 });
+applicationSchema.index({ tenantId: 1, companyId: 1 });
+applicationSchema.index({ status: 1 });
 
 const Application = mongoose.model('Application', applicationSchema);
 
