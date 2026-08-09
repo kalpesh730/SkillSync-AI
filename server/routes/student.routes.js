@@ -26,6 +26,11 @@ import {
   getMyCertifications,
   getStudentCertificationsById
 } from '../controllers/certification.controller.js';
+import {
+  uploadResume,
+  getMyResumes,
+  getStudentResumesById
+} from '../controllers/resume.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
 import { ROLES } from '../constants/index.js';
@@ -35,6 +40,7 @@ import { educationSchema } from '../validators/education.validator.js';
 import { skillSchema } from '../validators/skill.validator.js';
 import { projectSchema } from '../validators/project.validator.js';
 import { certificationSchema } from '../validators/certification.validator.js';
+import { uploadResumeMetadataSchema } from '../validators/resume.validator.js';
 
 const router = express.Router();
 
@@ -52,6 +58,8 @@ router.get('/me/projects', authorize(ROLES.STUDENT), getMyProjects);
 router.post('/me/projects', authorize(ROLES.STUDENT), validateRequest(projectSchema), addProject);
 router.get('/me/certifications', authorize(ROLES.STUDENT), getMyCertifications);
 router.post('/me/certifications', authorize(ROLES.STUDENT), validateRequest(certificationSchema), addCertification);
+router.get('/me/resumes', authorize(ROLES.STUDENT), getMyResumes);
+router.post('/me/resumes', authorize(ROLES.STUDENT), validateRequest(uploadResumeMetadataSchema), uploadResume);
 
 router.get(
   '/',
@@ -87,6 +95,12 @@ router.get(
   '/:id/certifications',
   authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.RECRUITER),
   getStudentCertificationsById
+);
+
+router.get(
+  '/:id/resumes',
+  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.RECRUITER),
+  getStudentResumesById
 );
 
 export default router;

@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 import { env } from './config/env.js';
 
 import healthRoutes from './routes/health.routes.js';
@@ -13,6 +14,7 @@ import educationRoutes from './routes/education.routes.js';
 import skillRoutes from './routes/skill.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import certificationRoutes from './routes/certification.routes.js';
+import resumeRoutes from './routes/resume.routes.js';
 import { notFound } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
@@ -27,8 +29,10 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(compression());
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+
+// Static file serving removed for security. Resumes are served via authenticated API route.
 
 // Routes
 app.use('/health', healthRoutes);
@@ -38,6 +42,7 @@ app.use('/api/v1/education', educationRoutes);
 app.use('/api/v1/skills', skillRoutes);
 app.use('/api/v1/projects', projectRoutes);
 app.use('/api/v1/certifications', certificationRoutes);
+app.use('/api/v1/resumes', resumeRoutes);
 
 // Error Handling
 app.use(notFound);

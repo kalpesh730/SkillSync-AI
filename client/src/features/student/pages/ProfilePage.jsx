@@ -7,6 +7,7 @@ import ProfileCompletionCard from '../components/ProfileCompletionCard';
 import EducationList from '../components/EducationList';
 import ProjectList from '../components/ProjectList';
 import CertificationList from '../components/CertificationList';
+import ResumeList from '../components/ResumeList';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/Card';
 
@@ -95,6 +96,10 @@ const ProfilePage = () => {
       <EducationList />
       <ProjectList />
       <CertificationList />
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Resumes</h2>
+        <ResumeList />
+      </div>
     </PageContainer>
   );
 };

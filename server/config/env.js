@@ -26,4 +26,6 @@ export const env = {
   JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES,
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
   NODE_ENV: process.env.NODE_ENV || 'development',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || null,
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
 };
