@@ -9,7 +9,7 @@ const Forbidden = () => {
       <div className="text-center flex flex-col items-center">
         <Lock className="w-24 h-24 text-red-500 mb-6" />
         <h1 className="text-4xl font-extrabold text-gray-900">403 Forbidden</h1>
-        <p className="mt-4 text-gray-500 max-w-md">You don't have permission to access this resource. Please contact your administrator if you believe this is a mistake.</p>
+        <p className="mt-4 text-gray-500 max-w-md">You don&apos;t have permission to access this resource. Please contact your administrator if you believe this is a mistake.</p>
         <div className="mt-8">
           <Link to="/dashboard">
             <Button variant="primary">Return to Dashboard</Button>

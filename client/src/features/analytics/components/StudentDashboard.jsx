@@ -106,7 +106,7 @@ const StudentDashboard = () => {
           <h3 className="text-lg font-bold mb-4 border-b pb-2">Application Funnel</h3>
           {applications.total === 0 ? (
             <div className="text-center py-6 text-gray-500">
-              You haven't applied to any jobs yet.
+              You haven&apos;t applied to any jobs yet.
             </div>
           ) : (
             <div className="space-y-3">

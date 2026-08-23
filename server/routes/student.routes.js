@@ -33,6 +33,7 @@ import {
 } from '../controllers/resume.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
+import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 import { ROLES } from '../constants/index.js';
 import { validateRequest } from '../validators/common.validator.js';
 import { updateStudentProfileSchema } from '../validators/student.validator.js';
@@ -50,16 +51,16 @@ router.use(authenticate);
 router.get('/me', authorize(ROLES.STUDENT), getMyProfile);
 router.put('/me', authorize(ROLES.STUDENT), validateRequest(updateStudentProfileSchema), updateMyProfile);
 router.patch('/me/avatar', authorize(ROLES.STUDENT), updateAvatar);
-router.get('/me/education', authorize(ROLES.STUDENT), getMyEducation);
-router.post('/me/education', authorize(ROLES.STUDENT), validateRequest(educationSchema), addEducation);
-router.get('/me/skills', authorize(ROLES.STUDENT), getMySkills);
-router.post('/me/skills', authorize(ROLES.STUDENT), validateRequest(skillSchema), addSkill);
-router.get('/me/projects', authorize(ROLES.STUDENT), getMyProjects);
-router.post('/me/projects', authorize(ROLES.STUDENT), validateRequest(projectSchema), addProject);
-router.get('/me/certifications', authorize(ROLES.STUDENT), getMyCertifications);
-router.post('/me/certifications', authorize(ROLES.STUDENT), validateRequest(certificationSchema), addCertification);
-router.get('/me/resumes', authorize(ROLES.STUDENT), getMyResumes);
-router.post('/me/resumes', authorize(ROLES.STUDENT), validateRequest(uploadResumeMetadataSchema), uploadResume);
+router.get('/me/education', authorize(ROLES.STUDENT), requireTenantContext, getMyEducation);
+router.post('/me/education', authorize(ROLES.STUDENT), requireTenantContext, validateRequest(educationSchema), addEducation);
+router.get('/me/skills', authorize(ROLES.STUDENT), requireTenantContext, getMySkills);
+router.post('/me/skills', authorize(ROLES.STUDENT), requireTenantContext, validateRequest(skillSchema), addSkill);
+router.get('/me/projects', authorize(ROLES.STUDENT), requireTenantContext, getMyProjects);
+router.post('/me/projects', authorize(ROLES.STUDENT), requireTenantContext, validateRequest(projectSchema), addProject);
+router.get('/me/certifications', authorize(ROLES.STUDENT), requireTenantContext, getMyCertifications);
+router.post('/me/certifications', authorize(ROLES.STUDENT), requireTenantContext, validateRequest(certificationSchema), addCertification);
+router.get('/me/resumes', authorize(ROLES.STUDENT), requireTenantContext, getMyResumes);
+router.post('/me/resumes', authorize(ROLES.STUDENT), requireTenantContext, validateRequest(uploadResumeMetadataSchema), uploadResume);
 
 router.get(
   '/',

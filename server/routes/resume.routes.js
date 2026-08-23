@@ -10,6 +10,7 @@ import { authorize } from '../middlewares/authorize.middleware.js';
 import { ROLES } from '../constants/index.js';
 import { validateRequest } from '../middlewares/validate.middleware.js';
 import { updateResumeSchema } from '../validators/resume.validator.js';
+import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 
 const router = express.Router();
 
@@ -18,12 +19,14 @@ router.use(authenticate);
 router.get(
   '/:resumeId/file',
   authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.RECRUITER),
+  requireTenantContext,
   downloadResume
 );
 
 router.put(
   '/:resumeId',
   authorize(ROLES.STUDENT),
+  requireTenantContext,
   validateRequest(updateResumeSchema),
   updateResume
 );
@@ -31,12 +34,14 @@ router.put(
 router.delete(
   '/:resumeId',
   authorize(ROLES.STUDENT),
+  requireTenantContext,
   deleteResume
 );
 
 router.post(
   '/:resumeId/parse',
   authorize(ROLES.STUDENT),
+  requireTenantContext,
   retryParsing
 );
 

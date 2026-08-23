@@ -15,14 +15,14 @@ export const uploadResume = async (req, res, next) => {
 
 export const getMyResumes = async (req, res, next) => {
   try {
-    const { _id: userId, tenantId } = req.user;
+    const { _id: userId, tenantId, role: userRole, companyId: userCompanyId } = req.user;
     const student = await Student.findOne({ userId });
     
     if (!student) {
       return apiResponse(res, HTTP_STATUS.NOT_FOUND, 'Student profile not found.');
     }
 
-    const resumes = await ResumeService.getStudentResumes(student._id, tenantId);
+    const resumes = await ResumeService.getStudentResumes(student._id, tenantId, userRole, userCompanyId);
     return apiResponse(res, HTTP_STATUS.OK, MESSAGES.SUCCESS, resumes);
   } catch (error) {
     next(error);
@@ -31,10 +31,10 @@ export const getMyResumes = async (req, res, next) => {
 
 export const getStudentResumesById = async (req, res, next) => {
   try {
-    const { tenantId } = req.user;
-    const { studentId } = req.params;
+    const { tenantId, role: userRole, companyId: userCompanyId } = req.user;
+    const studentId = req.params.id || req.params.studentId;
     
-    const resumes = await ResumeService.getStudentResumes(studentId, tenantId);
+    const resumes = await ResumeService.getStudentResumes(studentId, tenantId, userRole, userCompanyId);
     return apiResponse(res, HTTP_STATUS.OK, MESSAGES.SUCCESS, resumes);
   } catch (error) {
     next(error);
@@ -79,10 +79,10 @@ export const retryParsing = async (req, res, next) => {
 
 export const downloadResume = async (req, res, next) => {
   try {
-    const { _id: userId, role: userRole, tenantId } = req.user;
+    const { _id: userId, role: userRole, tenantId, companyId: userCompanyId } = req.user;
     const { resumeId } = req.params;
 
-    const physicalPath = await ResumeService.downloadResume(resumeId, userId, userRole, tenantId);
+    const physicalPath = await ResumeService.downloadResume(resumeId, userId, userRole, tenantId, userCompanyId);
     
     res.sendFile(physicalPath, (err) => {
       if (err) {

@@ -59,7 +59,7 @@ const JobMatchCard = ({ jobId }) => {
 
         {jobMatch.reasons.length > 0 && (
           <div>
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Why you're a fit</h4>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">Why you&apos;re a fit</h4>
             <ul className="space-y-1">
               {jobMatch.reasons.map((reason, idx) => (
                 <li key={idx} className="text-sm text-gray-600 flex items-start">

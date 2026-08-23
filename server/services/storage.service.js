@@ -28,7 +28,7 @@ export class StorageService {
     await this.init();
 
     // Remove data URI scheme prefix if present (e.g. data:application/pdf;base64,)
-    const base64String = base64Data.replace(/^data:[a-zA-Z0-9+\/.-]+;base64,/, '');
+    const base64String = base64Data.replace(new RegExp('^data:[a-zA-Z0-9+/.-]+;base64,'), '');
     
     // Generate secure filename: tenantId_studentId_timestamp_random.ext
     const ext = path.extname(originalName).toLowerCase() || '.pdf';

@@ -10,7 +10,17 @@ export const registerUser = async (data) => {
     throw error;
   }
 
-  const user = await User.create(data);
+  // Force safe defaults for public registration to prevent privilege escalation
+  // Privileged roles and tenant assignments must be handled via authorized internal workflows.
+  const safeData = {
+    ...data,
+    role: 'STUDENT',
+  };
+  // Public registration should not allow tenantId or companyId assignment.
+  if (safeData.tenantId) delete safeData.tenantId;
+  if (safeData.companyId) delete safeData.companyId;
+
+  const user = await User.create(safeData);
 
   if (user.role === 'STUDENT') {
     const nameParts = user.name.split(' ');

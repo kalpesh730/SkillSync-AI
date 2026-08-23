@@ -7,13 +7,14 @@ import {
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
 import { ROLES } from '../constants/index.js';
+import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 
 const router = express.Router();
 
 router.use(authenticate);
 
 // Student Analytics
-router.get('/student', authorize(ROLES.STUDENT), getStudentAnalytics);
+router.get('/student', authorize(ROLES.STUDENT), requireTenantContext, getStudentAnalytics);
 
 // Recruiter/Company Analytics
 router.get('/company', authorize(ROLES.COMPANY_HR, ROLES.RECRUITER), getRecruiterAnalytics);

@@ -13,6 +13,7 @@ import { authorize } from '../middlewares/authorize.middleware.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 import { applyToJobSchema, updateApplicationStatusSchema, updateRecruiterNotesSchema } from '../validators/application.validator.js';
 import { ROLES } from '../constants/index.js';
+import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(ROLES.STUDENT),
+  requireTenantContext,
   validateRequest(applyToJobSchema),
   applyToJob
 );
@@ -29,6 +31,7 @@ router.post(
 router.get(
   '/me',
   authorize(ROLES.STUDENT),
+  requireTenantContext,
   getMyApplications
 );
 
@@ -49,12 +52,14 @@ router.get(
 router.get(
   '/:applicationId',
   authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  requireTenantContext,
   getApplication
 );
 
 router.patch(
   '/:applicationId/status',
   authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  requireTenantContext,
   validateRequest(updateApplicationStatusSchema),
   updateApplicationStatus
 );

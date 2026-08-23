@@ -26,11 +26,17 @@ export const emailSchema = z
 
 export const validateRequest = (schema) => async (req, res, next) => {
   try {
-    await schema.parseAsync({
+    const validatedData = await schema.parseAsync({
       body: req.body,
       query: req.query,
       params: req.params,
     });
+    
+    // Assign validated and sanitized data back to the request object
+    if (validatedData.body) req.body = validatedData.body;
+    if (validatedData.query) req.query = validatedData.query;
+    if (validatedData.params) req.params = validatedData.params;
+    
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {

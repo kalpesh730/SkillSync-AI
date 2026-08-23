@@ -1,6 +1,6 @@
 import { ResumeRepository } from '../repositories/resume.repository.js';
 import Student from '../models/Student.js';
-import { NotFoundError, ConflictError } from '../errors/AppError.js';
+import { NotFoundError, ConflictError, ForbiddenError } from '../errors/AppError.js';
 import { StorageService } from './storage.service.js';
 import { ResumeParserService } from './resumeParser.service.js';
 import { RESUME_CONSTANTS } from '../constants/resume.constants.js';
@@ -104,13 +104,29 @@ export class ResumeService {
     }, userId);
   }
 
-  static async getStudentResumes(targetStudentId, requestingUserTenantId) {
-    const student = await Student.findOne({ _id: targetStudentId, tenantId: requestingUserTenantId });
-    if (!student) {
-      throw new NotFoundError('Student not found or access denied.');
+  static async getStudentResumes(targetStudentId, requestingUserTenantId, userRole, userCompanyId) {
+    let filterTenantId = requestingUserTenantId;
+
+    if (userRole === 'COMPANY_HR' || userRole === 'RECRUITER') {
+      filterTenantId = undefined; // Recruiter access doesn't strictly depend on tenant match
+      const Application = (await import('../models/Application.js')).default;
+      const hasApplied = await Application.exists({
+        studentId: targetStudentId,
+        companyId: userCompanyId,
+        isDeleted: false
+      });
+      
+      if (!hasApplied) {
+        throw new ForbiddenError('You do not have permission to view resumes for this student.');
+      }
+    } else {
+      const student = await Student.findOne({ _id: targetStudentId, tenantId: requestingUserTenantId });
+      if (!student) {
+        throw new NotFoundError('Student not found or access denied.');
+      }
     }
 
-    return ResumeRepository.findByStudentId(targetStudentId, requestingUserTenantId);
+    return ResumeRepository.findByStudentId(targetStudentId, filterTenantId);
   }
 
   static async getResumeById(resumeId, targetStudentId, requestingUserTenantId) {
@@ -182,8 +198,13 @@ export class ResumeService {
     return true;
   }
 
-  static async downloadResume(resumeId, userId, userRole, tenantId) {
-    const resume = await ResumeRepository.findById(resumeId, tenantId);
+  static async downloadResume(resumeId, userId, userRole, tenantId, userCompanyId) {
+    let filterTenantId = tenantId;
+    if (userRole === 'COMPANY_HR' || userRole === 'RECRUITER') {
+      filterTenantId = undefined;
+    }
+
+    const resume = await ResumeRepository.findById(resumeId, filterTenantId);
     if (!resume) {
       throw new NotFoundError('Resume not found.');
     }
@@ -192,6 +213,22 @@ export class ResumeService {
       const student = await Student.findOne({ userId });
       if (!student || resume.studentId.toString() !== student._id.toString()) {
         throw new NotFoundError('Resume not found or you do not have permission.');
+      }
+    } else if (userRole === 'COMPANY_HR' || userRole === 'RECRUITER') {
+      const Application = (await import('../models/Application.js')).default;
+      const hasApplied = await Application.exists({
+        studentId: resume.studentId,
+        companyId: userCompanyId,
+        isDeleted: false
+      });
+      if (!hasApplied) {
+        throw new ForbiddenError('You do not have permission to view this resume.');
+      }
+    } else {
+      // Admins
+      const student = await Student.findOne({ _id: resume.studentId, tenantId });
+      if (!student) {
+        throw new NotFoundError('Student not found or access denied.');
       }
     }
 

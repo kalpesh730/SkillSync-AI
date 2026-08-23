@@ -2,6 +2,7 @@ import express from 'express';
 import { updateProject, deleteProject } from '../controllers/project.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
+import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 import { ROLES } from '../constants/index.js';
 import { validateRequest } from '../validators/common.validator.js';
 import { updateProjectSchema } from '../validators/project.validator.js';
@@ -14,6 +15,7 @@ router.use(authenticate);
 router.put(
   '/:projectId',
   authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.SUPER_ADMIN),
+  requireTenantContext,
   validateRequest(updateProjectSchema),
   updateProject
 );
@@ -22,6 +24,7 @@ router.put(
 router.delete(
   '/:projectId',
   authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.SUPER_ADMIN),
+  requireTenantContext,
   deleteProject
 );
 

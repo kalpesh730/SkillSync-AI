@@ -13,6 +13,7 @@ import { authorize } from '../middlewares/authorize.middleware.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 import { jobSchema } from '../validators/job.validator.js';
 import { ROLES } from '../constants/index.js';
+import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 
 const router = express.Router();
 
@@ -21,12 +22,14 @@ router.use(authenticate);
 // Get published jobs (Accessible by all roles)
 router.get(
   '/published',
+  requireTenantContext,
   getPublishedJobs
 );
 
 // Get single job
 router.get(
   '/:jobId',
+  requireTenantContext,
   getJob
 );
 
