@@ -3,7 +3,7 @@ import Student from '../models/Student.js';
 import { NotFoundError, ConflictError, ForbiddenError } from '../errors/AppError.js';
 import { StorageService } from './storage.service.js';
 import { ResumeParserService } from './resumeParser.service.js';
-import { RESUME_CONSTANTS } from '../constants/resume.constants.js';
+import { RESUME_UPLOAD_STATUS, RESUME_PARSING_STATUS } from '../constants/resume.constants.js';
 
 export class ResumeService {
   static async uploadResume(userId, tenantId, resumeData) {
@@ -43,8 +43,8 @@ export class ResumeService {
       tenantId,
       createdBy: userId,
       fileUrl,
-      uploadStatus: RESUME_CONSTANTS.UPLOAD_STATUS.COMPLETED,
-      parsingStatus: RESUME_CONSTANTS.PARSING_STATUS.PENDING
+      uploadStatus: RESUME_UPLOAD_STATUS.COMPLETED,
+      parsingStatus: RESUME_PARSING_STATUS.PENDING
     };
 
     let createdResume = await ResumeRepository.create(newResumeData);
@@ -53,24 +53,24 @@ export class ResumeService {
     try {
       const physicalPath = StorageService.getPhysicalPath(fileUrl);
       const parsedData = await ResumeParserService.parseResume(physicalPath, resumeData.fileType);
-      
+
       if (parsedData) {
         createdResume.parsedData = parsedData;
-        createdResume.parsingStatus = RESUME_CONSTANTS.PARSING_STATUS.COMPLETED;
+        createdResume.parsingStatus = RESUME_PARSING_STATUS.COMPLETED;
         createdResume.parsedAt = new Date();
       } else {
-        createdResume.parsingStatus = RESUME_CONSTANTS.PARSING_STATUS.FAILED;
+        createdResume.parsingStatus = RESUME_PARSING_STATUS.FAILED;
       }
-      
-      createdResume = await ResumeRepository.update(createdResume, { 
+
+      createdResume = await ResumeRepository.update(createdResume, {
         parsedData: createdResume.parsedData,
         parsingStatus: createdResume.parsingStatus,
         parsedAt: createdResume.parsedAt
       }, userId);
     } catch (e) {
       console.error('Error during inline parsing:', e);
-      createdResume = await ResumeRepository.update(createdResume, { 
-        parsingStatus: RESUME_CONSTANTS.PARSING_STATUS.FAILED 
+      createdResume = await ResumeRepository.update(createdResume, {
+        parsingStatus: RESUME_PARSING_STATUS.FAILED
       }, userId);
     }
 
@@ -91,10 +91,10 @@ export class ResumeService {
 
     if (parsedData) {
       resume.parsedData = parsedData;
-      resume.parsingStatus = RESUME_CONSTANTS.PARSING_STATUS.COMPLETED;
+      resume.parsingStatus = RESUME_PARSING_STATUS.COMPLETED;
       resume.parsedAt = new Date();
     } else {
-      resume.parsingStatus = RESUME_CONSTANTS.PARSING_STATUS.FAILED;
+      resume.parsingStatus = RESUME_PARSING_STATUS.FAILED;
     }
 
     return ResumeRepository.update(resume, {
@@ -115,12 +115,16 @@ export class ResumeService {
         companyId: userCompanyId,
         isDeleted: false
       });
-      
+
       if (!hasApplied) {
         throw new ForbiddenError('You do not have permission to view resumes for this student.');
       }
     } else {
-      const student = await Student.findOne({ _id: targetStudentId, tenantId: requestingUserTenantId });
+      const studentQuery = { _id: targetStudentId };
+      if (requestingUserTenantId) {
+        studentQuery.tenantId = requestingUserTenantId;
+      }
+      const student = await Student.findOne(studentQuery);
       if (!student) {
         throw new NotFoundError('Student not found or access denied.');
       }
@@ -130,7 +134,11 @@ export class ResumeService {
   }
 
   static async getResumeById(resumeId, targetStudentId, requestingUserTenantId) {
-    const student = await Student.findOne({ _id: targetStudentId, tenantId: requestingUserTenantId });
+    const studentQuery = { _id: targetStudentId };
+    if (requestingUserTenantId) {
+      studentQuery.tenantId = requestingUserTenantId;
+    }
+    const student = await Student.findOne(studentQuery);
     if (!student) {
       throw new NotFoundError('Student not found or access denied.');
     }
@@ -182,7 +190,7 @@ export class ResumeService {
 
     const wasPrimary = resume.isPrimary;
     await ResumeRepository.softDelete(resume, userId);
-    
+
     // Also delete the physical file
     await StorageService.deleteFile(resume.fileUrl);
 

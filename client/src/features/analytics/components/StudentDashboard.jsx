@@ -20,6 +20,30 @@ const StudentDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Incomplete Profile Guidance Banner */}
+      {(!profile.hasPrimaryResume || profile.completeness < 80) && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h4 className="text-sm font-bold text-gray-900">
+              {profile.completeness < 50 ? 'Get Started: Complete Your Profile' : 'Profile Optimization in Progress'}
+            </h4>
+            <p className="text-xs text-gray-600 mt-1">
+              {!profile.hasPrimaryResume
+                ? 'Upload your primary resume and add technical skills to activate full AI Career Intelligence and ATS scoring.'
+                : 'Add remaining education records and projects to maximize recruiter visibility.'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              to="/student/profile"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+            >
+              {!profile.hasPrimaryResume ? 'Upload Resume' : 'Complete Profile'}
+            </Link>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-white">
           <div className="flex items-center">
@@ -32,7 +56,7 @@ const StudentDashboard = () => {
             </div>
           </div>
         </Card>
-        
+
         <Card className="bg-white">
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 text-purple-600 rounded-lg">
@@ -123,8 +147,8 @@ const StudentDashboard = () => {
                     <span className="font-medium">{stat.count}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className={`${stat.color} h-2 rounded-full`} 
+                    <div
+                      className={`${stat.color} h-2 rounded-full`}
                       style={{ width: `${Math.max((stat.count / applications.total) * 100, 2)}%` }}
                     ></div>
                   </div>

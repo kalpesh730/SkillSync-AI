@@ -43,13 +43,16 @@ export class StudentService {
   }
 
   static async getStudentById(studentId, tenantId) {
-    const student = await Student.findOne({ _id: studentId, tenantId }).populate('userId', 'email role isActive');
+    const filter = { _id: studentId };
+    if (tenantId) filter.tenantId = tenantId;
+    const student = await Student.findOne(filter).populate('userId', 'email role isActive');
     if (!student) throw new NotFoundError('Student not found.');
     return student;
   }
 
   static async getAllStudents(tenantId, queryString) {
-    const features = new APIFeatures(Student.find({ tenantId }), queryString)
+    const baseFilter = tenantId ? { tenantId } : {};
+    const features = new APIFeatures(Student.find(baseFilter), queryString)
       .filter()
       .search(['firstName', 'lastName', 'usn', 'email'])
       .sort()
@@ -58,7 +61,7 @@ export class StudentService {
 
     const students = await features.query;
     
-    const countFeatures = new APIFeatures(Student.find({ tenantId }), queryString).filter().search(['firstName', 'lastName', 'usn', 'email']);
+    const countFeatures = new APIFeatures(Student.find(baseFilter), queryString).filter().search(['firstName', 'lastName', 'usn', 'email']);
     const total = await countFeatures.query.countDocuments();
     
     return { students, total };

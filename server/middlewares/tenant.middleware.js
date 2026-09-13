@@ -41,16 +41,15 @@ export const requireTenantContext = (req, res, next) => {
     return next();
   }
 
-  // Certain roles might not need a tenantId, e.g., COMPANY_HR or RECRUITER depending on design.
-  // But for STUDENT, COLLEGE_ADMIN, PLACEMENT_OFFICER, they must have one to access tenant scoped routes.
-  // We'll just enforce it generally. Wait, do Company users have a tenantId?
-  // User.js says: tenantId ref College, companyId ref Company.
-  // So a COMPANY_HR has a companyId, but no tenantId!
-  // If we apply this to student routes, they are only accessed by students (tenantId) or recruiters (companyId).
-  // Ah, the user's instructions say: "Add a clear server-side guard for users/students without tenant context."
-  // And: "Tenant-scoped requests: Add a clear server-side guard for users/students without tenant context."
-  if (req.user && req.user.role === 'STUDENT' && !req.user.tenantId) {
-    const error = new Error('You must be assigned to a college/tenant to access this resource. Your account is pending assignment.');
+  // In a single-college architecture, we allow students to access their own resources
+  // even if they do not have a tenantId assigned yet, relying on ownership checks.
+  if (req.user && req.user.role === 'STUDENT') {
+    return next();
+  }
+
+  // Enforce tenant context for other roles that strictly require it (like COLLEGE_ADMIN)
+  if (req.user && ['COLLEGE_ADMIN', 'PLACEMENT_OFFICER'].includes(req.user.role) && !req.user.tenantId) {
+    const error = new Error('You must be assigned to a college/tenant to access this resource.');
     error.statusCode = 403;
     return next(error);
   }

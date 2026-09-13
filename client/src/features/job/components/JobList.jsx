@@ -8,11 +8,13 @@ import Button from '../../../components/ui/Button';
 import { Plus } from 'lucide-react';
 import Modal from '../../../components/ui/Modal';
 import ConfirmationDialog from '../../../components/ui/ConfirmationDialog';
+import EmptyState from '../../../components/ui/EmptyState';
+import { Search } from 'lucide-react';
 
 const JobList = ({ companyId }) => {
   const { jobs, fetchCompanyJobs, fetchPublishedJobs, updateJobStatus, deleteJob, isLoading, error } = useJobStore();
   const { user } = useAuthStore();
-  
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [deletingJobId, setDeletingJobId] = useState(null);
@@ -53,7 +55,7 @@ const JobList = ({ companyId }) => {
   };
 
   const filteredJobs = jobs.filter((job) => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           job.companyId?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesEmployment = filterEmployment ? job.employmentType === filterEmployment : true;
     const matchesWorkplace = filterWorkplace ? job.workplaceType === filterWorkplace : true;
@@ -87,20 +89,23 @@ const JobList = ({ companyId }) => {
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+        <div className="flex-1 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
           <input
             type="text"
             placeholder="Search jobs or companies..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
           />
         </div>
         <select
           value={filterEmployment}
           onChange={(e) => setFilterEmployment(e.target.value)}
-          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          className="block w-full md:w-auto py-2 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         >
           <option value="">All Employment Types</option>
           <option value="FULL_TIME">Full Time</option>
@@ -112,7 +117,7 @@ const JobList = ({ companyId }) => {
         <select
           value={filterWorkplace}
           onChange={(e) => setFilterWorkplace(e.target.value)}
-          className="rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+          className="block w-full md:w-auto py-2 px-3 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         >
           <option value="">All Workplaces</option>
           <option value="ON_SITE">On-site</option>
@@ -128,15 +133,23 @@ const JobList = ({ companyId }) => {
       )}
 
       {filteredJobs.length === 0 && !isLoading ? (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <p className="text-gray-500">No jobs found matching your criteria.</p>
-        </div>
+        <EmptyState
+          title="No jobs found"
+          description="We couldn't find any jobs matching your current filters. Try adjusting your search criteria."
+          action={
+            isRecruiter && companyId ? (
+              <Button onClick={() => setIsFormOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" /> Post a Job
+              </Button>
+            ) : null
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredJobs.map((job) => (
-            <JobCard 
-              key={job._id} 
-              job={job} 
+            <JobCard
+              key={job._id}
+              job={job}
               canManage={isRecruiter && (!user.companyId || user.companyId === job.companyId?._id || user.companyId === job.companyId)}
               onEdit={handleEdit}
               onDelete={(id) => setDeletingJobId(id)}
@@ -154,11 +167,11 @@ const JobList = ({ companyId }) => {
             title={editingJob ? 'Edit Job' : 'Post New Job'}
             size="2xl"
           >
-            <JobForm 
-              initialData={editingJob} 
+            <JobForm
+              initialData={editingJob}
               companyId={companyId}
-              onSuccess={handleCloseForm} 
-              onCancel={handleCloseForm} 
+              onSuccess={handleCloseForm}
+              onCancel={handleCloseForm}
             />
           </Modal>
 

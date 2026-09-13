@@ -29,5 +29,9 @@ export const resumeApi = {
   retryParsing: async (resumeId) => {
     const response = await api.post(`/resumes/${resumeId}/parse`);
     return response.data;
+  },
+  downloadResume: async (resumeId) => {
+    const response = await api.get(`/resumes/${resumeId}/file`, { responseType: 'blob' });
+    return response.data;
   }
 };

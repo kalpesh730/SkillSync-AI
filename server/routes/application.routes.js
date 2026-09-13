@@ -10,7 +10,7 @@ import {
 } from '../controllers/application.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
-import { validateRequest } from '../middlewares/validateRequest.js';
+import { validateRequest } from '../validators/common.validator.js';
 import { applyToJobSchema, updateApplicationStatusSchema, updateRecruiterNotesSchema } from '../validators/application.validator.js';
 import { ROLES } from '../constants/index.js';
 import { requireTenantContext } from '../middlewares/tenant.middleware.js';
@@ -38,27 +38,27 @@ router.get(
 // Recruiter / HR routes for job/company scope
 router.get(
   '/job/:jobId',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   getJobApplications
 );
 
 router.get(
   '/company/:companyId',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   getCompanyApplications
 );
 
 // Shared / Specific Application Routes
 router.get(
   '/:applicationId',
-  authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   requireTenantContext,
   getApplication
 );
 
 router.patch(
   '/:applicationId/status',
-  authorize(ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.STUDENT, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   requireTenantContext,
   validateRequest(updateApplicationStatusSchema),
   updateApplicationStatus
@@ -66,7 +66,7 @@ router.patch(
 
 router.patch(
   '/:applicationId/notes',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   validateRequest(updateRecruiterNotesSchema),
   updateRecruiterNotes
 );

@@ -8,7 +8,7 @@ import {
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
 import { ROLES } from '../constants/index.js';
-import { validateRequest } from '../middlewares/validate.middleware.js';
+import { validateRequest } from '../validators/common.validator.js';
 import { updateResumeSchema } from '../validators/resume.validator.js';
 import { requireTenantContext } from '../middlewares/tenant.middleware.js';
 

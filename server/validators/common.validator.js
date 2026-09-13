@@ -26,17 +26,22 @@ export const emailSchema = z
 
 export const validateRequest = (schema) => async (req, res, next) => {
   try {
-    const validatedData = await schema.parseAsync({
-      body: req.body,
-      query: req.query,
-      params: req.params,
-    });
-    
-    // Assign validated and sanitized data back to the request object
-    if (validatedData.body) req.body = validatedData.body;
-    if (validatedData.query) req.query = validatedData.query;
-    if (validatedData.params) req.params = validatedData.params;
-    
+    const isFullRequestSchema = schema.shape && ('body' in schema.shape || 'query' in schema.shape || 'params' in schema.shape);
+
+    if (isFullRequestSchema) {
+      const validatedData = await schema.parseAsync({
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+
+      if (validatedData.body) req.body = validatedData.body;
+      if (validatedData.query) req.query = validatedData.query;
+      if (validatedData.params) req.params = validatedData.params;
+    } else {
+      req.body = await schema.parseAsync(req.body);
+    }
+
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {

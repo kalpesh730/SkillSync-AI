@@ -8,34 +8,44 @@ export class ApplicationRepository {
   }
 
   static async findById(id, tenantId) {
-    return await Application.findOne({ _id: id, tenantId, isDeleted: false })
+    const filter = { _id: id, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Application.findOne(filter)
       .populate('studentId', 'firstName lastName email profile')
       .populate('jobId', 'title employmentType workplaceType location status companyId')
       .populate('companyId', 'name logoUrl');
   }
 
   static async findByStudentId(studentId, tenantId) {
-    return await Application.find({ studentId, tenantId, isDeleted: false })
+    const filter = { studentId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Application.find(filter)
       .sort({ appliedAt: -1 })
       .populate('jobId', 'title employmentType workplaceType location status companyId')
       .populate('companyId', 'name logoUrl');
   }
 
   static async findByJobId(jobId, tenantId) {
-    return await Application.find({ jobId, tenantId, isDeleted: false })
+    const filter = { jobId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Application.find(filter)
       .sort({ appliedAt: -1 })
       .populate('studentId', 'firstName lastName email profile');
   }
 
   static async findByCompanyId(companyId, tenantId) {
-    return await Application.find({ companyId, tenantId, isDeleted: false })
+    const filter = { companyId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Application.find(filter)
       .sort({ appliedAt: -1 })
       .populate('jobId', 'title status')
       .populate('studentId', 'firstName lastName email profile');
   }
 
   static async checkExistingApplication(studentId, jobId, tenantId) {
-    return await Application.findOne({ studentId, jobId, tenantId, isDeleted: false });
+    const filter = { studentId, jobId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Application.findOne(filter);
   }
 
   static async updateStatus(id, tenantId, status, userId) {
@@ -52,8 +62,11 @@ export class ApplicationRepository {
     if (status === APPLICATION_STATUS.REJECTED) updateData.rejectedAt = new Date();
     if (status === APPLICATION_STATUS.WITHDRAWN) updateData.withdrawnAt = new Date();
 
+    const filter = { _id: id, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+
     return await Application.findOneAndUpdate(
-      { _id: id, tenantId, isDeleted: false },
+      filter,
       { $set: updateData },
       { new: true, runValidators: true }
     )
@@ -63,8 +76,10 @@ export class ApplicationRepository {
   }
 
   static async updateRecruiterNotes(id, tenantId, notes, userId) {
+    const filter = { _id: id, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
     return await Application.findOneAndUpdate(
-      { _id: id, tenantId, isDeleted: false },
+      filter,
       { 
         $set: { 
           recruiterNotes: notes,
@@ -76,8 +91,10 @@ export class ApplicationRepository {
   }
 
   static async softDelete(id, tenantId, userId) {
+    const filter = { _id: id, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
     return await Application.findOneAndUpdate(
-      { _id: id, tenantId, isDeleted: false },
+      filter,
       {
         $set: {
           isDeleted: true,

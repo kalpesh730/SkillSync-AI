@@ -8,8 +8,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './layouts/AppLayout';
 
 // Pages
+import Home from './pages/Home/Home';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
 import ProfilePage from './features/student/pages/ProfilePage';
 import EditProfilePage from './features/student/pages/EditProfilePage';
@@ -18,6 +20,8 @@ import JobsPage from './features/job/pages/JobsPage';
 import ApplicationsPage from './features/application/pages/ApplicationsPage';
 import JobApplicationsPage from './features/application/pages/JobApplicationsPage';
 import AIDashboardPage from './features/ai/pages/AIDashboardPage';
+import Settings from './pages/Settings/Settings';
+import Support from './pages/Support/Support';
 
 function App() {
   const { getCurrentUser, loading } = useAuthStore();
@@ -47,13 +51,14 @@ function App() {
         }} 
       />
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/student/dashboard" element={<Dashboard />} />
             <Route path="/student/profile" element={<ProfilePage />} />
@@ -66,6 +71,9 @@ function App() {
             <Route path="/jobs/:jobId/applications" element={<JobApplicationsPage />} />
             <Route path="/applications" element={<ApplicationsPage />} />
             <Route path="/ai/dashboard" element={<AIDashboardPage />} />
+            <Route path="/student/settings" element={<Settings />} />
+            <Route path="/admin/settings" element={<Settings />} />
+            <Route path="/support" element={<Support />} />
           </Route>
         </Route>
 

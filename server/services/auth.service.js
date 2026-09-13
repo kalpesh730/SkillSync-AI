@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
 import { StudentService } from './student.service.js';
@@ -10,11 +11,14 @@ export const registerUser = async (data) => {
     throw error;
   }
 
-  // Force safe defaults for public registration to prevent privilege escalation
-  // Privileged roles and tenant assignments must be handled via authorized internal workflows.
+  // Allowed public registration roles (students, recruiters, company HR, placement officers).
+  // Privileged admin roles (SUPER_ADMIN, COLLEGE_ADMIN) are strictly protected against public self-registration.
+  const allowedPublicRoles = ['STUDENT', 'RECRUITER', 'COMPANY_HR', 'PLACEMENT_OFFICER'];
+  const assignedRole = allowedPublicRoles.includes(data.role) ? data.role : 'STUDENT';
+
   const safeData = {
     ...data,
-    role: 'STUDENT',
+    role: assignedRole,
   };
   // Public registration should not allow tenantId or companyId assignment.
   if (safeData.tenantId) delete safeData.tenantId;
@@ -28,14 +32,14 @@ export const registerUser = async (data) => {
     const lastName = nameParts.slice(1).join(' ') || ' ';
     await StudentService.createInitialProfile(user._id, user.tenantId, firstName, lastName, user.email);
   }
-  
+
   // Convert mongoose document to object and remove password
   const userObj = user.toObject();
   delete userObj.password;
 
-  const accessToken = generateAccessToken({ 
-    id: user._id, 
-    role: user.role, 
+  const accessToken = generateAccessToken({
+    id: user._id,
+    role: user.role,
     tenantId: user.tenantId,
     companyId: user.companyId
   });
@@ -62,9 +66,9 @@ export const loginUser = async (email, password) => {
   const userObj = user.toObject();
   delete userObj.password;
 
-  const accessToken = generateAccessToken({ 
-    id: user._id, 
-    role: user.role, 
+  const accessToken = generateAccessToken({
+    id: user._id,
+    role: user.role,
     tenantId: user.tenantId,
     companyId: user.companyId
   });
@@ -89,11 +93,11 @@ export const refreshUserToken = async (token) => {
       throw error;
     }
 
-    const accessToken = generateAccessToken({ 
-      id: user._id, 
-      role: user.role, 
+    const accessToken = generateAccessToken({
+      id: user._id,
+      role: user.role,
       tenantId: user.tenantId,
-      companyId: user.companyId 
+      companyId: user.companyId
     });
     return { accessToken };
   } catch (err) {
@@ -101,4 +105,50 @@ export const refreshUserToken = async (token) => {
     error.statusCode = 401;
     throw error;
   }
+};
+
+export const requestPasswordReset = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    return { success: true };
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  user.passwordResetToken = hashedToken;
+  user.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+  await user.save({ validateBeforeSave: false });
+
+  // Ready for email delivery: In a production setup with SMTP/SES, reset email with token link is dispatched here.
+  return { success: true, resetToken, email: user.email };
+};
+
+export const resetPasswordWithToken = async (token, newPassword) => {
+  if (!token) {
+    const error = new Error('Reset token is required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const hashedToken = crypto.createHash('sha256').update(token.trim()).digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    const error = new Error('Invalid or expired password reset token');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  user.password = newPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  return { success: true };
 };

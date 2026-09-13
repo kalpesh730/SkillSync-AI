@@ -28,9 +28,15 @@ async function runTests() {
       expectedTenant: undefined,
     },
     {
-      name: 'D. RECRUITER attack',
+      name: 'D. Legitimate RECRUITER registration',
       payload: { name: 'Recruiter User', email: 'recruiter@test.com', password: 'password123', role: 'RECRUITER' },
-      expectedRole: 'STUDENT',
+      expectedRole: 'RECRUITER',
+      expectedTenant: undefined,
+    },
+    {
+      name: 'D2. Legitimate COMPANY_HR registration',
+      payload: { name: 'HR User', email: 'hr@test.com', password: 'password123', role: 'COMPANY_HR' },
+      expectedRole: 'COMPANY_HR',
       expectedTenant: undefined,
     },
     {

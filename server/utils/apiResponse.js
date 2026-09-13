@@ -40,3 +40,12 @@ export const paginated = (res, data, metadata, message = MESSAGES.SUCCESS) => {
     metadata,
   });
 };
+
+export const apiResponse = (res, statusCode, message, data = null) => {
+  const isSuccess = statusCode >= 200 && statusCode < 300;
+  return res.status(statusCode).json({
+    success: isSuccess,
+    message,
+    ...(data !== null && { data })
+  });
+};

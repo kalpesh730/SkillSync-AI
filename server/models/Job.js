@@ -7,7 +7,6 @@ const jobSchema = new mongoose.Schema(
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: COLLECTION_NAMES.COLLEGE,
-      required: true,
       index: true,
     },
     companyId: {

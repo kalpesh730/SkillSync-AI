@@ -1,6 +1,6 @@
 import { env } from '../config/env.js';
 import fs from 'fs/promises';
-import { RESUME_CONSTANTS } from '../constants/resume.constants.js';
+
 
 export class ResumeParserService {
   /**

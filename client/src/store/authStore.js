@@ -30,6 +30,37 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  forgotPassword: async (email) => {
+    try {
+      const response = await api.post('/auth/forgot-password', { email });
+      return {
+        success: true,
+        message: response.data.message,
+        devResetToken: response.data.devResetToken
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error?.message || error.response?.data?.message || 'Failed to request password reset'
+      };
+    }
+  },
+
+  resetPassword: async ({ token, password }) => {
+    try {
+      const response = await api.post('/auth/reset-password', { token, password });
+      return {
+        success: true,
+        message: response.data.message
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error?.message || error.response?.data?.message || 'Failed to reset password'
+      };
+    }
+  },
+
   logout: async (localOnly = false) => {
     if (!localOnly) {
       try {
@@ -58,7 +89,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       // First try to refresh the token to ensure we have a valid one if starting fresh
       await get().refreshSession();
-      
+
       const response = await api.get('/auth/me');
       set({ user: response.data.data, isAuthenticated: true, loading: false });
     } catch (error) {

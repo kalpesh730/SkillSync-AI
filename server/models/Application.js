@@ -7,7 +7,6 @@ const applicationSchema = new mongoose.Schema(
     tenantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: COLLECTION_NAMES.COLLEGE,
-      required: true,
       index: true,
     },
     studentId: {
@@ -100,7 +99,6 @@ applicationSchema.index({ studentId: 1, jobId: 1 }, { unique: true, partialFilte
 applicationSchema.index({ tenantId: 1, studentId: 1 });
 applicationSchema.index({ tenantId: 1, jobId: 1 });
 applicationSchema.index({ tenantId: 1, companyId: 1 });
-applicationSchema.index({ status: 1 });
 
 const Application = mongoose.model('Application', applicationSchema);
 

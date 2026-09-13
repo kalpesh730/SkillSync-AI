@@ -8,18 +8,23 @@ export class JobRepository {
   }
 
   static async findById(jobId, tenantId) {
-    return await Job.findOne({ _id: jobId, tenantId, isDeleted: false })
+    const filter = { _id: jobId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Job.findOne(filter)
       .populate('companyId', 'name logoUrl industry location');
   }
 
   static async findByCompanyId(companyId, tenantId) {
-    return await Job.find({ companyId, tenantId, isDeleted: false })
+    const filter = { companyId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Job.find(filter)
       .sort({ createdAt: -1 })
       .populate('companyId', 'name logoUrl industry location');
   }
 
   static async findPublishedByTenantId(tenantId, filters = {}) {
-    const query = { tenantId, status: JOB_STATUS.PUBLISHED, isDeleted: false, ...filters };
+    const query = { status: JOB_STATUS.PUBLISHED, isDeleted: false, ...filters };
+    if (tenantId) query.tenantId = tenantId;
     return await Job.find(query)
       .sort({ publishedAt: -1 })
       .populate('companyId', 'name logoUrl industry location');
@@ -27,16 +32,20 @@ export class JobRepository {
 
   static async update(jobId, tenantId, updateData, userId) {
     updateData.updatedBy = userId;
+    const filter = { _id: jobId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
     return await Job.findOneAndUpdate(
-      { _id: jobId, tenantId, isDeleted: false },
+      filter,
       { $set: updateData },
       { new: true, runValidators: true }
     ).populate('companyId', 'name logoUrl industry location');
   }
 
   static async softDelete(jobId, tenantId, userId) {
+    const filter = { _id: jobId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
     return await Job.findOneAndUpdate(
-      { _id: jobId, tenantId, isDeleted: false },
+      filter,
       {
         $set: {
           isDeleted: true,

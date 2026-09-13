@@ -27,7 +27,7 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const { user, accessToken, refreshToken } = await authService.loginUser(email, password);
-    
+
     setRefreshTokenCookie(res, refreshToken);
 
     res.status(200).json({
@@ -75,6 +75,41 @@ export const getMe = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: req.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const result = await authService.requestPasswordReset(email);
+
+    const responsePayload = {
+      success: true,
+      message: 'If an account with that email exists, password reset instructions have been generated.',
+    };
+
+    // In non-production environments only, provide devResetToken to facilitate automated testing/demo flow without email provider
+    if (process.env.NODE_ENV !== 'production' && result?.resetToken) {
+      responsePayload.devResetToken = result.resetToken;
+    }
+
+    res.status(200).json(responsePayload);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    await authService.resetPasswordWithToken(token, password);
+
+    res.status(200).json({
+      success: true,
+      message: 'Password has been reset successfully. You may now log in with your new password.',
     });
   } catch (error) {
     next(error);

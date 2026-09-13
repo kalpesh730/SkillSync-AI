@@ -8,8 +8,18 @@ const ApplicationsPage = () => {
 
   if (user?.role !== 'STUDENT') {
     return (
-      <div className="flex justify-center items-center h-64 text-gray-500">
-        You do not have permission to view this page.
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center max-w-lg mx-auto mt-12">
+        <FileText className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Applications Management</h2>
+        <p className="text-gray-600 mb-6">
+          To review applicants and update hiring pipelines, select <strong>View Applicants</strong> on any posted job.
+        </p>
+        <a
+          href="/jobs"
+          className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+        >
+          Go to Jobs Management
+        </a>
       </div>
     );
   }

@@ -7,28 +7,37 @@ export class ResumeRepository {
   }
 
   static async findById(resumeId, tenantId) {
-    return Resume.findOne({
+    const query = {
       _id: resumeId,
-      tenantId,
       isDeleted: false,
-    });
+    };
+    if (tenantId) {
+      query.tenantId = tenantId;
+    }
+    return Resume.findOne(query);
   }
 
   static async findByStudentId(studentId, tenantId) {
-    return Resume.find({
+    const query = {
       studentId,
-      tenantId,
       isDeleted: false,
-    }).sort({ createdAt: -1 });
+    };
+    if (tenantId) {
+      query.tenantId = tenantId;
+    }
+    return Resume.find(query).sort({ createdAt: -1 });
   }
 
   static async findPrimaryByStudentId(studentId, tenantId) {
-    return Resume.findOne({
+    const query = {
       studentId,
-      tenantId,
       isPrimary: true,
       isDeleted: false,
-    });
+    };
+    if (tenantId) {
+      query.tenantId = tenantId;
+    }
+    return Resume.findOne(query);
   }
 
   static async update(resume, updateData, userId) {
@@ -44,10 +53,12 @@ export class ResumeRepository {
   static async setAllNonPrimary(studentId, tenantId, userId, excludeResumeId = null) {
     const filter = {
       studentId,
-      tenantId,
       isPrimary: true,
       isDeleted: false,
     };
+    if (tenantId) {
+      filter.tenantId = tenantId;
+    }
     
     if (excludeResumeId) {
       filter._id = { $ne: excludeResumeId };

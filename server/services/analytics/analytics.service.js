@@ -7,28 +7,46 @@ import { APPLICATION_STATUS } from '../../constants/application.constants.js';
 import { ROLES } from '../../constants/index.js';
 
 export class AnalyticsService {
-  
+
   // ============================================================================
   // STAGE B: STUDENT ANALYTICS
   // ============================================================================
-  static async getStudentAnalytics(studentId, tenantId) {
-    const student = await Student.findOne({ _id: studentId, tenantId }).lean();
+  static async getStudentAnalytics(userOrStudentId, tenantId) {
+    let student = await Student.findOne({ userId: userOrStudentId }).lean();
+    if (!student) {
+      student = await Student.findById(userOrStudentId).lean();
+    }
     if (!student) return null;
 
-    const resumes = await Resume.find({ studentId, tenantId }).lean();
+    const studentId = student._id;
+
+    const [resumes, applications, SkillModel, ProjectModel, CertModel, EduModel] = await Promise.all([
+      Resume.find({ studentId, isDeleted: false }).lean(),
+      Application.find({ studentId, isDeleted: false }).lean(),
+      import('../../models/Skill.js').then(m => m.default),
+      import('../../models/Project.js').then(m => m.default),
+      import('../../models/Certification.js').then(m => m.default),
+      import('../../models/Education.js').then(m => m.default)
+    ]);
+
+    const [skills, projects, certifications, educations] = await Promise.all([
+      SkillModel.find({ studentId, isDeleted: false }).lean(),
+      ProjectModel.find({ studentId, isDeleted: false }).lean(),
+      CertModel.find({ studentId, isDeleted: false }).lean(),
+      EduModel.find({ studentId, isDeleted: false }).lean()
+    ]);
+
     const primaryResume = resumes.find(r => r.isPrimary) || resumes[0];
 
-    const applications = await Application.find({ studentId, tenantId }).lean();
-
-    // 1. Profile completeness calculation (basic heuristic)
-    let completeness = 0;
-    if (student.profile?.headline) completeness += 10;
-    if (student.profile?.bio) completeness += 10;
-    if (student.profile?.location) completeness += 10;
-    if (student.skills?.length > 0) completeness += 20;
-    if (student.education?.length > 0) completeness += 20;
-    if (student.projects?.length > 0) completeness += 10;
-    if (primaryResume) completeness += 20;
+    // 1. Profile completeness calculation
+    let completeness = student.profileCompletion || 0;
+    if (!completeness) {
+      if (student.firstName && student.lastName) completeness += 20;
+      if (educations.length > 0) completeness += 20;
+      if (skills.length > 0) completeness += 20;
+      if (projects.length > 0) completeness += 20;
+      if (primaryResume) completeness += 20;
+    }
 
     // 2. Application breakdown
     const applicationsCount = applications.length;
@@ -41,32 +59,35 @@ export class AnalyticsService {
       [APPLICATION_STATUS.REJECTED]: 0,
       [APPLICATION_STATUS.WITHDRAWN]: 0,
     };
-    
+
     applications.forEach(app => {
-      applicationsByStatus[app.status] = (applicationsByStatus[app.status] || 0) + 1;
+      if (applicationsByStatus[app.status] !== undefined) {
+        applicationsByStatus[app.status] = (applicationsByStatus[app.status] || 0) + 1;
+      }
     });
 
-    const activeApplications = applicationsCount - applicationsByStatus[APPLICATION_STATUS.REJECTED] - applicationsByStatus[APPLICATION_STATUS.WITHDRAWN];
-    const successRate = applicationsCount > 0 
-      ? Math.round((applicationsByStatus[APPLICATION_STATUS.SELECTED] / applicationsCount) * 100) 
+    const activeApplications = applicationsCount - (applicationsByStatus[APPLICATION_STATUS.REJECTED] || 0) - (applicationsByStatus[APPLICATION_STATUS.WITHDRAWN] || 0);
+    const successRate = applicationsCount > 0
+      ? Math.round(((applicationsByStatus[APPLICATION_STATUS.SELECTED] || 0) / applicationsCount) * 100)
       : 0;
 
     return {
       profile: {
         completeness,
-        skillCount: student.skills?.length || 0,
-        projectCount: student.projects?.length || 0,
-        certificationCount: student.certifications?.length || 0,
+        skillCount: skills.length,
+        projectCount: projects.length,
+        certificationCount: certifications.length,
+        educationCount: educations.length,
         hasPrimaryResume: !!primaryResume,
       },
       applications: {
         total: applicationsCount,
         active: activeApplications,
         byStatus: applicationsByStatus,
-        interviews: applicationsByStatus[APPLICATION_STATUS.INTERVIEW],
-        shortlisted: applicationsByStatus[APPLICATION_STATUS.SHORTLISTED],
-        selected: applicationsByStatus[APPLICATION_STATUS.SELECTED],
-        rejected: applicationsByStatus[APPLICATION_STATUS.REJECTED],
+        interviews: applicationsByStatus[APPLICATION_STATUS.INTERVIEW] || 0,
+        shortlisted: applicationsByStatus[APPLICATION_STATUS.SHORTLISTED] || 0,
+        selected: applicationsByStatus[APPLICATION_STATUS.SELECTED] || 0,
+        rejected: applicationsByStatus[APPLICATION_STATUS.REJECTED] || 0,
         successRate,
       }
     };
@@ -76,19 +97,23 @@ export class AnalyticsService {
   // STAGE C: RECRUITER / COMPANY ANALYTICS
   // ============================================================================
   static async getCompanyAnalytics(companyId, tenantId) {
-    const jobs = await Job.find({ companyId, tenantId }).lean();
-    
+    const jobFilter = { companyId, isDeleted: false };
+    if (tenantId) jobFilter.tenantId = tenantId;
+    const jobs = await Job.find(jobFilter).lean();
+
     let totalJobs = jobs.length;
     let publishedJobs = 0;
     let closedJobs = 0;
-    
+
     jobs.forEach(job => {
       if (job.status === 'PUBLISHED') publishedJobs++;
       if (job.status === 'CLOSED') closedJobs++;
     });
 
-    const applications = await Application.find({ companyId, tenantId }).lean();
-    
+    const appFilter = { companyId, isDeleted: false };
+    if (tenantId) appFilter.tenantId = tenantId;
+    const applications = await Application.find(appFilter).lean();
+
     const applicationsCount = applications.length;
     const applicationsByStatus = {
       [APPLICATION_STATUS.APPLIED]: 0,
@@ -104,8 +129,8 @@ export class AnalyticsService {
       applicationsByStatus[app.status] = (applicationsByStatus[app.status] || 0) + 1;
     });
 
-    const conversionRate = applicationsCount > 0 
-      ? Math.round((applicationsByStatus[APPLICATION_STATUS.SELECTED] / applicationsCount) * 100) 
+    const conversionRate = applicationsCount > 0
+      ? Math.round((applicationsByStatus[APPLICATION_STATUS.SELECTED] / applicationsCount) * 100)
       : 0;
 
     return {
@@ -130,20 +155,22 @@ export class AnalyticsService {
   // STAGE D: COLLEGE / PLACEMENT ANALYTICS
   // ============================================================================
   static async getTenantAnalytics(tenantId) {
+    const filter = tenantId ? { tenantId } : {};
+
     // 1. Students
-    const totalStudents = await Student.countDocuments({ tenantId });
-    
+    const totalStudents = await Student.countDocuments(filter);
+
     // 2. Companies & Jobs
-    const totalCompanies = await Company.countDocuments({ tenantId });
-    const totalJobs = await Job.countDocuments({ tenantId, status: 'PUBLISHED' });
-    
+    const totalCompanies = await Company.countDocuments({ ...filter, isDeleted: false });
+    const totalJobs = await Job.countDocuments({ ...filter, status: 'PUBLISHED', isDeleted: false });
+
     // 3. Applications
-    const applications = await Application.find({ tenantId }).lean();
+    const applications = await Application.find({ ...filter, isDeleted: false }).lean();
     const totalApplications = applications.length;
-    
+
     let selectedCount = 0;
     const placedStudents = new Set();
-    
+
     applications.forEach(app => {
       if (app.status === APPLICATION_STATUS.SELECTED) {
         selectedCount++;
@@ -152,8 +179,8 @@ export class AnalyticsService {
     });
 
     const studentsPlacedCount = placedStudents.size;
-    const placementRate = totalStudents > 0 
-      ? Math.round((studentsPlacedCount / totalStudents) * 100) 
+    const placementRate = totalStudents > 0
+      ? Math.round((studentsPlacedCount / totalStudents) * 100)
       : 0;
 
     return {

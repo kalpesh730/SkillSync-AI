@@ -41,7 +41,8 @@ export class StorageService {
 
     const timestamp = Date.now();
     const random = crypto.randomBytes(4).toString('hex');
-    const secureFileName = `${tenantId}_${studentId}_${timestamp}_${random}${ext}`;
+    const tenantPrefix = tenantId || 'student';
+    const secureFileName = `${tenantPrefix}_${studentId}_${timestamp}_${random}${ext}`;
     
     const filePath = path.join(this.UPLOAD_DIR, secureFileName);
     

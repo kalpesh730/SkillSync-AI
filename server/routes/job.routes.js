@@ -10,7 +10,7 @@ import {
 } from '../controllers/job.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
-import { validateRequest } from '../middlewares/validateRequest.js';
+import { validateRequest } from '../validators/common.validator.js';
 import { jobSchema } from '../validators/job.validator.js';
 import { ROLES } from '../constants/index.js';
 import { requireTenantContext } from '../middlewares/tenant.middleware.js';
@@ -36,14 +36,14 @@ router.get(
 // Get company jobs
 router.get(
   '/company/:companyId',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   getCompanyJobs
 );
 
 // Create job
 router.post(
   '/',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   validateRequest(jobSchema),
   createJob
 );
@@ -51,7 +51,7 @@ router.post(
 // Update job
 router.put(
   '/:jobId',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   validateRequest(jobSchema.partial()), // Use partial for updates
   updateJob
 );
@@ -59,14 +59,14 @@ router.put(
 // Update job status
 router.patch(
   '/:jobId/status',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   updateJobStatus
 );
 
 // Delete job
 router.delete(
   '/:jobId',
-  authorize(ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   deleteJob
 );
 

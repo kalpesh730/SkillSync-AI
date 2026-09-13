@@ -7,25 +7,33 @@ export class CompanyRepository {
   }
 
   static async findById(companyId, tenantId) {
-    return await Company.findOne({ _id: companyId, tenantId, isDeleted: false });
+    const filter = { _id: companyId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Company.findOne(filter);
   }
 
   static async findByTenantId(tenantId) {
-    return await Company.find({ tenantId, isDeleted: false }).sort({ createdAt: -1 });
+    const filter = { isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
+    return await Company.find(filter).sort({ createdAt: -1 });
   }
 
   static async update(companyId, tenantId, updateData, userId) {
     updateData.updatedBy = userId;
+    const filter = { _id: companyId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
     return await Company.findOneAndUpdate(
-      { _id: companyId, tenantId, isDeleted: false },
+      filter,
       { $set: updateData },
       { new: true, runValidators: true }
     );
   }
 
   static async softDelete(companyId, tenantId, userId) {
+    const filter = { _id: companyId, isDeleted: false };
+    if (tenantId) filter.tenantId = tenantId;
     return await Company.findOneAndUpdate(
-      { _id: companyId, tenantId, isDeleted: false },
+      filter,
       {
         $set: {
           isDeleted: true,

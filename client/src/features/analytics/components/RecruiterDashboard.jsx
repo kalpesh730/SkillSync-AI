@@ -1,18 +1,71 @@
 import React, { useEffect } from 'react';
 import { useAnalyticsStore } from '../../../store/analyticsStore';
+import { useAuthStore } from '../../../store/authStore';
 import { Card } from '../../../components/ui/Card';
 import LoadingSpinner from '../../../components/ui/LoadingSpinner';
-import { Briefcase, Users, UserCheck, BarChart2 } from 'lucide-react';
+import { Briefcase, Users, UserCheck, BarChart2, Building2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const RecruiterDashboard = () => {
   const { companyAnalytics, loadingCompany, error, fetchCompanyAnalytics } = useAnalyticsStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    fetchCompanyAnalytics();
-  }, [fetchCompanyAnalytics]);
+    if (user?.companyId) {
+      fetchCompanyAnalytics();
+    }
+  }, [fetchCompanyAnalytics, user?.companyId]);
+
+  const isUnassociated = !user?.companyId || (error && error.toLowerCase().includes('not associated with a company'));
 
   if (loadingCompany) return <div className="flex justify-center p-8"><LoadingSpinner /></div>;
+
+  if (isUnassociated) {
+    const isCompanyHR = user?.role === 'COMPANY_HR';
+    return (
+      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm text-center max-w-2xl mx-auto my-6">
+        <div className="w-14 h-14 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-5 text-amber-600">
+          <Building2 className="w-7 h-7" />
+        </div>
+
+        <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-100/70 text-amber-800 border border-amber-200 mb-3">
+          Company setup required
+        </div>
+
+        <h3 className="text-2xl font-bold text-gray-900 tracking-tight mb-2">
+          Company setup required
+        </h3>
+
+        <p className="text-gray-600 text-sm max-w-lg mx-auto mb-6 leading-relaxed">
+          Your recruiter account is not currently associated with a company.
+          {isCompanyHR
+            ? ' As a Company HR representative, you can register and establish your company profile within the placement ecosystem to begin posting jobs and reviewing applicants.'
+            : ' Please coordinate with your organization’s Company HR administrator or your college placement team to connect your recruiter account.'}
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            to="/companies"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all"
+          >
+            {isCompanyHR ? '[Complete Company Setup]' : 'View Partner Companies'}
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Link>
+          <Link
+            to="/support"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-medium rounded-xl border border-gray-200 transition-all"
+          >
+            Contact Placement Office
+          </Link>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-gray-100 text-xs text-gray-400">
+          Once your company association is completed, hiring analytics, applicant funnels, and pipeline metrics will automatically become available here.
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>;
   if (!companyAnalytics) return null;
 
@@ -33,7 +86,7 @@ const RecruiterDashboard = () => {
             </div>
           </div>
         </Card>
-        
+
         <Card className="bg-white">
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 text-purple-600 rounded-lg">
@@ -93,8 +146,8 @@ const RecruiterDashboard = () => {
                     <span className="font-medium">{stat.count}</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-                    <div 
-                      className={`${stat.color} h-full rounded-full transition-all duration-500`} 
+                    <div
+                      className={`${stat.color} h-full rounded-full transition-all duration-500`}
                       style={{ width: `${Math.max((stat.count / applications.total) * 100, 1)}%` }}
                     ></div>
                   </div>
@@ -127,7 +180,7 @@ const RecruiterDashboard = () => {
               </div>
               <span className="text-gray-400">&rarr;</span>
             </Link>
-            
+
             <Link to="/applications" className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
               <div className="flex items-center">
                 <div className="p-2 bg-purple-50 text-purple-600 rounded-md mr-3">

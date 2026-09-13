@@ -9,6 +9,12 @@ export class AppError extends Error {
   }
 }
 
+export class BadRequestError extends AppError {
+  constructor(message = 'Bad Request') {
+    super(message, HTTP_STATUS.BAD_REQUEST);
+  }
+}
+
 export class ValidationError extends AppError {
   constructor(message = 'Validation Error', errors = []) {
     super(message, HTTP_STATUS.BAD_REQUEST);

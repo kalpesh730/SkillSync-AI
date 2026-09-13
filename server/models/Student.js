@@ -116,7 +116,6 @@ studentSchema.virtual('fullName').get(function () {
 studentSchema.index({ tenantId: 1, usn: 1 }, { unique: true, partialFilterExpression: { usn: { $type: "string" }, isDeleted: false } });
 studentSchema.index({ tenantId: 1, rollNumber: 1 }, { unique: true, partialFilterExpression: { rollNumber: { $type: "string" }, isDeleted: false } });
 studentSchema.index({ tenantId: 1, isDeleted: 1 });
-studentSchema.index({ userId: 1 });
 
 const Student = mongoose.model(COLLECTION_NAMES.STUDENT, studentSchema);
 export default Student;

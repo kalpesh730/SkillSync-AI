@@ -49,6 +49,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+    passwordResetToken: {
+      type: String,
+      select: false,
+    },
+    passwordResetExpires: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,
@@ -60,6 +68,7 @@ userSchema.index({ role: 1 });
 userSchema.index({ tenantId: 1 });
 userSchema.index({ companyId: 1 });
 userSchema.index({ isActive: 1 });
+userSchema.index({ passwordResetToken: 1 }, { sparse: true });
 
 // Pre-save hook to hash password
 userSchema.pre('save', async function (next) {

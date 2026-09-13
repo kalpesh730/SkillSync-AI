@@ -15,12 +15,12 @@ export const authorize = (...allowedRoles) => {
       return next(error);
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
-      const error = new Error(`User role ${req.user.role} is not authorized to access this route`);
-      error.statusCode = 403;
-      return next(error);
+    if (req.user.role === 'SUPER_ADMIN' || allowedRoles.includes(req.user.role)) {
+      return next();
     }
 
-    next();
+    const error = new Error(`User role ${req.user.role} is not authorized to access this route`);
+    error.statusCode = 403;
+    return next(error);
   };
 };
