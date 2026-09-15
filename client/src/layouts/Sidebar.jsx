@@ -1,11 +1,19 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Users, Briefcase, FileText, Settings, Menu, Zap, LayoutDashboard, Building2, Award, TrendingUp } from 'lucide-react';
+import { Users, Briefcase, FileText, Settings, Zap, LayoutDashboard, Building2, Award, TrendingUp, X } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { MODULES, getProductModule } from '../utils/roles';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen, toggleSidebar, closeSidebar }) => {
   const { user } = useAuthStore();
+
+  const handleNavClick = () => {
+    if (closeSidebar) {
+      closeSidebar();
+    } else if (toggleSidebar && isOpen) {
+      toggleSidebar();
+    }
+  };
 
   const getNavItems = () => {
     if (!user) return [];
@@ -52,9 +60,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-lg lg:shadow-none ${
+      className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-lg lg:shadow-none ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
+      aria-label="Sidebar Navigation"
     >
       <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 bg-gray-50/50">
         <div className="flex items-center gap-2">
@@ -65,8 +74,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             SkillSync
           </span>
         </div>
-        <button onClick={toggleSidebar} className="lg:hidden text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors">
-          <Menu className="w-6 h-6" />
+        <button
+          onClick={closeSidebar || toggleSidebar}
+          className="lg:hidden text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Close navigation sidebar"
+        >
+          <X className="w-6 h-6" />
         </button>
       </div>
       <nav className="p-4 space-y-1">
@@ -76,6 +89,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <NavLink
               key={item.name}
               to={item.path}
+              onClick={handleNavClick}
               className={({ isActive }) =>
                 `flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group ${
                   isActive
@@ -85,10 +99,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }
             >
               <Icon
-                className={`w-5 h-5 mr-3 transition-colors duration-200 ${
-                  /* Can't easily use isActive outside the callback, but we rely on parent text color to cascade */
-                  ''
-                }`}
+                className="w-5 h-5 mr-3 transition-colors duration-200"
               />
               {item.name}
             </NavLink>

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import Dropdown, { DropdownItem, DropdownDivider } from '../components/ui/Dropdown';
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -50,6 +50,8 @@ const Navbar = ({ toggleSidebar }) => {
       <div className="flex items-center">
         <button
           onClick={toggleSidebar}
+          aria-label="Toggle navigation sidebar"
+          aria-expanded={isSidebarOpen}
           className="text-gray-500 hover:text-blue-600 lg:hidden focus:outline-none p-2 rounded-md hover:bg-blue-50 transition-colors"
         >
           <Menu className="w-6 h-6" />
