@@ -31,9 +31,12 @@ export class CompanyService {
       throw new NotFoundError('Company not found.');
     }
 
-    // Role-based restrictions
-    if (userRole === 'COMPANY_HR' && company._id.toString() !== userCompanyId?.toString()) {
-      throw new ForbiddenError('You can only update your own company.');
+    // Role-based restrictions: Non-admin users (COMPANY_HR, RECRUITER, STUDENT) can only update their own company
+    const adminRoles = ['SUPER_ADMIN', 'COLLEGE_ADMIN', 'PLACEMENT_OFFICER'];
+    if (!adminRoles.includes(userRole)) {
+      if (!userCompanyId || company._id.toString() !== userCompanyId.toString()) {
+        throw new ForbiddenError('You can only update your own company.');
+      }
     }
 
     return await CompanyRepository.update(companyId, tenantId, updateData, userId);
@@ -45,9 +48,12 @@ export class CompanyService {
       throw new NotFoundError('Company not found.');
     }
 
-    // Usually, only admins can delete a company, or maybe HR.
-    if (userRole === 'COMPANY_HR' && company._id.toString() !== userCompanyId?.toString()) {
-      throw new ForbiddenError('You can only delete your own company.');
+    // Role-based restrictions: Non-admin users (COMPANY_HR, RECRUITER, STUDENT) can only delete their own company
+    const adminRoles = ['SUPER_ADMIN', 'COLLEGE_ADMIN', 'PLACEMENT_OFFICER'];
+    if (!adminRoles.includes(userRole)) {
+      if (!userCompanyId || company._id.toString() !== userCompanyId.toString()) {
+        throw new ForbiddenError('You can only delete your own company.');
+      }
     }
 
     await CompanyRepository.softDelete(companyId, tenantId, userId);

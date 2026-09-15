@@ -34,7 +34,7 @@ router.get(
 // Create a new company
 router.post(
   '/',
-  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   validateRequest(companySchema),
   createCompany
 );
@@ -42,7 +42,7 @@ router.post(
 // Update a company
 router.put(
   '/:companyId',
-  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   validateRequest(companySchema),
   updateCompany
 );
@@ -50,7 +50,7 @@ router.put(
 // Delete (soft-delete) a company
 router.delete(
   '/:companyId',
-  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR),
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
   deleteCompany
 );
 
