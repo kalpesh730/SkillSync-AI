@@ -99,7 +99,7 @@ export class AnalyticsService {
   static async getCompanyAnalytics(companyId, tenantId) {
     const jobFilter = { companyId, isDeleted: false };
     if (tenantId) jobFilter.tenantId = tenantId;
-    const jobs = await Job.find(jobFilter).lean();
+    const jobs = await Job.find(jobFilter).sort({ createdAt: -1 }).lean();
 
     let totalJobs = jobs.length;
     let publishedJobs = 0;
@@ -112,7 +112,11 @@ export class AnalyticsService {
 
     const appFilter = { companyId, isDeleted: false };
     if (tenantId) appFilter.tenantId = tenantId;
-    const applications = await Application.find(appFilter).lean();
+    const applications = await Application.find(appFilter)
+      .sort({ appliedAt: -1 })
+      .populate('studentId', 'name email')
+      .populate('jobId', 'title')
+      .lean();
 
     const applicationsCount = applications.length;
     const applicationsByStatus = {
@@ -130,23 +134,28 @@ export class AnalyticsService {
     });
 
     const conversionRate = applicationsCount > 0
-      ? Math.round((applicationsByStatus[APPLICATION_STATUS.SELECTED] / applicationsCount) * 100)
+      ? Math.round(((applicationsByStatus[APPLICATION_STATUS.SELECTED] || 0) / applicationsCount) * 100)
       : 0;
+
+    const recentVacancies = jobs.slice(0, 5);
+    const recentApplications = applications.slice(0, 5);
 
     return {
       jobs: {
         total: totalJobs,
         published: publishedJobs,
-        closed: closedJobs
+        closed: closedJobs,
+        recent: recentVacancies
       },
       applications: {
         total: applicationsCount,
         byStatus: applicationsByStatus,
-        shortlisted: applicationsByStatus[APPLICATION_STATUS.SHORTLISTED],
-        interviews: applicationsByStatus[APPLICATION_STATUS.INTERVIEW],
-        selected: applicationsByStatus[APPLICATION_STATUS.SELECTED],
-        rejected: applicationsByStatus[APPLICATION_STATUS.REJECTED],
-        conversionRate
+        shortlisted: applicationsByStatus[APPLICATION_STATUS.SHORTLISTED] || 0,
+        interviews: applicationsByStatus[APPLICATION_STATUS.INTERVIEW] || 0,
+        selected: applicationsByStatus[APPLICATION_STATUS.SELECTED] || 0,
+        rejected: applicationsByStatus[APPLICATION_STATUS.REJECTED] || 0,
+        conversionRate,
+        recent: recentApplications
       }
     };
   }

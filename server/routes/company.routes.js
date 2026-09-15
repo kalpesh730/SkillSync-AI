@@ -6,6 +6,7 @@ import {
   updateCompany,
   deleteCompany
 } from '../controllers/company.controller.js';
+import { getRecruiterAnalytics } from '../controllers/analytics.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js';
 import { authorize } from '../middlewares/authorize.middleware.js';
 import { validateRequest } from '../validators/common.validator.js';
@@ -16,6 +17,13 @@ const router = express.Router();
 
 // All company routes require authentication
 router.use(authenticate);
+
+// Get company dashboard analytics
+router.get(
+  '/dashboard',
+  authorize(ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.COMPANY_HR, ROLES.RECRUITER),
+  getRecruiterAnalytics
+);
 
 // Get all companies (Accessible by SUPER_ADMIN, COLLEGE_ADMIN, PLACEMENT_OFFICER, STUDENT, COMPANY_HR, RECRUITER)
 router.get(
