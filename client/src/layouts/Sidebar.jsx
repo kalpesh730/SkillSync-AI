@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Users, Briefcase, FileText, Settings, Menu, Zap, LayoutDashboard, Building2 } from 'lucide-react';
+import { Users, Briefcase, FileText, Settings, Menu, Zap, LayoutDashboard, Building2, Award, TrendingUp } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { MODULES, getProductModule } from '../utils/roles';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { user } = useAuthStore();
@@ -9,60 +10,40 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const getNavItems = () => {
     if (!user) return [];
 
-    if (user.role === 'STUDENT') {
+    const productModule = getProductModule(user.role);
+
+    if (productModule === MODULES.STUDENT) {
       return [
         { name: 'Dashboard', path: '/student/dashboard', icon: LayoutDashboard },
-        { name: 'My Profile', path: '/student/profile', icon: Users },
+        { name: 'Profile', path: '/student/profile', icon: Users },
+        { name: 'Resume', path: '/student/profile', icon: FileText },
+        { name: 'Skills', path: '/student/profile', icon: Award },
         { name: 'Jobs', path: '/jobs', icon: Briefcase },
         { name: 'Applications', path: '/applications', icon: FileText },
-        { name: 'AI Assistant', path: '/ai/dashboard', icon: Zap },
+        { name: 'AI Support', path: '/ai/dashboard', icon: Zap },
+        { name: 'Settings', path: '/student/settings', icon: Settings },
       ];
     }
 
-    if (user.role === 'RECRUITER') {
+    if (productModule === MODULES.COMPANY) {
       return [
-        { name: 'Recruitment Hub', path: '/company/dashboard', icon: LayoutDashboard },
-        { name: 'Jobs', path: '/jobs', icon: Briefcase },
-        { name: 'Applicants', path: '/applications', icon: FileText },
-        { name: 'Company Profile', path: '/companies', icon: Building2 },
-      ];
-    }
-
-    if (user.role === 'COMPANY_HR') {
-      return [
-        { name: 'HR Dashboard', path: '/company/dashboard', icon: LayoutDashboard },
-        { name: 'Jobs', path: '/jobs', icon: Briefcase },
-        { name: 'Applicants', path: '/applications', icon: FileText },
-        { name: 'Company Profile', path: '/companies', icon: Building2 },
-        { name: 'HR Settings', path: '/admin/settings', icon: Settings },
-      ];
-    }
-
-    if (user.role === 'PLACEMENT_OFFICER') {
-      return [
-        { name: 'Placement Hub', path: '/college/dashboard', icon: LayoutDashboard },
-        { name: 'Partner Companies', path: '/companies', icon: Building2 },
-        { name: 'Jobs & Drives', path: '/jobs', icon: Briefcase },
-        { name: 'Applications', path: '/applications', icon: FileText },
-      ];
-    }
-
-    if (user.role === 'COLLEGE_ADMIN') {
-      return [
-        { name: 'Campus Overview', path: '/college/dashboard', icon: LayoutDashboard },
-        { name: 'Partner Companies', path: '/companies', icon: Building2 },
-        { name: 'Jobs', path: '/jobs', icon: Briefcase },
-        { name: 'Applications', path: '/applications', icon: FileText },
+        { name: 'Dashboard', path: '/company/dashboard', icon: LayoutDashboard },
+        { name: 'My Company', path: '/companies', icon: Building2 },
+        { name: 'My Vacancies', path: '/jobs', icon: Briefcase },
+        { name: 'My Applicants', path: '/applications', icon: FileText },
+        { name: 'AI Support', path: '/ai/dashboard', icon: Zap },
         { name: 'Settings', path: '/admin/settings', icon: Settings },
       ];
     }
 
-    // SUPER_ADMIN
+    // MODULES.ADMIN (SUPER_ADMIN, COLLEGE_ADMIN, PLACEMENT_OFFICER)
     return [
-      { name: 'Admin Console', path: '/admin/dashboard', icon: LayoutDashboard },
-      { name: 'Partner Companies', path: '/companies', icon: Building2 },
-      { name: 'Jobs', path: '/jobs', icon: Briefcase },
-      { name: 'Applications', path: '/applications', icon: FileText },
+      { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+      { name: 'Students', path: '/student/profile', icon: Users },
+      { name: 'Companies', path: '/companies', icon: Building2 },
+      { name: 'Vacancies', path: '/jobs', icon: Briefcase },
+      { name: 'Analytics', path: '/college/dashboard', icon: TrendingUp },
+      { name: 'AI Support', path: '/ai/dashboard', icon: Zap },
       { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
   };

@@ -1,24 +1,20 @@
-import { ROLES } from './roles';
+import { MODULES, getProductModule } from './roles.js';
 
 /**
- * Helper to determine the dashboard route based on user role.
- * 
- * @param {String} role 
+ * Helper to determine the dashboard route based on user role module.
+ *
+ * @param {String} role
  * @returns {String} The route path to redirect to
  */
 export const getDashboardRouteByRole = (role) => {
-  switch (role) {
-    case ROLES.SUPER_ADMIN:
+  const module = getProductModule(role);
+  switch (module) {
+    case MODULES.ADMIN:
       return '/admin/dashboard';
-    case ROLES.COLLEGE_ADMIN:
-    case ROLES.PLACEMENT_OFFICER:
-      return '/college/dashboard';
-    case ROLES.COMPANY_HR:
-    case ROLES.RECRUITER:
+    case MODULES.COMPANY:
       return '/company/dashboard';
-    case ROLES.STUDENT:
-      return '/student/dashboard';
+    case MODULES.STUDENT:
     default:
-      return '/'; // Fallback
+      return '/student/dashboard';
   }
 };

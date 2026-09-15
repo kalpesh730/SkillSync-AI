@@ -11,9 +11,9 @@ export const registerUser = async (data) => {
     throw error;
   }
 
-  // Allowed public registration roles (students, recruiters, company HR, placement officers).
-  // Privileged admin roles (SUPER_ADMIN, COLLEGE_ADMIN) are strictly protected against public self-registration.
-  const allowedPublicRoles = ['STUDENT', 'RECRUITER', 'COMPANY_HR', 'PLACEMENT_OFFICER'];
+  // Allowed public registration roles (STUDENT, RECRUITER, COMPANY_HR).
+  // Admin module roles (SUPER_ADMIN, COLLEGE_ADMIN, PLACEMENT_OFFICER) are strictly protected against public self-registration.
+  const allowedPublicRoles = ['STUDENT', 'RECRUITER', 'COMPANY_HR'];
   const assignedRole = allowedPublicRoles.includes(data.role) ? data.role : 'STUDENT';
 
   const safeData = {

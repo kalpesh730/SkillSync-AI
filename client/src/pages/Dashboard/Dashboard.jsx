@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAuthStore } from '../../store/authStore';
-import { LogOut, User, Mail, Shield, Upload, Settings, Clock, School } from 'lucide-react';
+import { LogOut, User, Mail, Shield, Upload, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import RoleGuard from '../../components/Guards/RoleGuard';
-import { ROLES } from '../../utils/roles';
+import { MODULES, getProductModule } from '../../utils/roles';
 import StudentDashboard from '../../features/analytics/components/StudentDashboard';
 import RecruiterDashboard from '../../features/analytics/components/RecruiterDashboard';
 import CollegeAdminDashboard from '../../features/analytics/components/CollegeAdminDashboard';
@@ -18,36 +18,22 @@ const Dashboard = () => {
   };
 
   const getRoleHeader = () => {
-    switch (user?.role) {
-      case ROLES.STUDENT:
+    const productModule = getProductModule(user?.role);
+    switch (productModule) {
+      case MODULES.STUDENT:
         return {
-          title: 'Student Career Hub',
+          title: 'Student Hub',
           subtitle: 'Track your profile strength, job applications, and AI career recommendations',
         };
-      case ROLES.RECRUITER:
+      case MODULES.COMPANY:
         return {
-          title: 'Recruiter Operations Hub',
+          title: 'Company Recruitment Hub',
           subtitle: 'Monitor active job listings, review applicant pipelines, and manage candidate conversions',
         };
-      case ROLES.COMPANY_HR:
+      case MODULES.ADMIN:
         return {
-          title: 'Enterprise Recruitment Management',
-          subtitle: 'Company-level recruitment governance, talent pipeline metrics, and organization settings',
-        };
-      case ROLES.PLACEMENT_OFFICER:
-        return {
-          title: 'Placement Directorate Hub',
-          subtitle: 'College-wide placement overview, placement rates, partner companies, and campus drives',
-        };
-      case ROLES.COLLEGE_ADMIN:
-        return {
-          title: 'Campus Administration Dashboard',
-          subtitle: 'Institutional placement oversight, academic partner metrics, and tenant governance',
-        };
-      case ROLES.SUPER_ADMIN:
-        return {
-          title: 'SkillSync Global Administration',
-          subtitle: 'Ecosystem-wide administrative controls, tenant metrics, and platform operations',
+          title: 'Admin Governance Console',
+          subtitle: 'System-wide governance, company metrics, job vacancy oversight, and analytics',
         };
       default:
         return {
@@ -60,6 +46,7 @@ const Dashboard = () => {
   if (!user) return null;
 
   const roleHeader = getRoleHeader();
+  const productModule = getProductModule(user.role);
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 p-4 sm:p-8">
@@ -107,10 +94,10 @@ const Dashboard = () => {
                 <Shield className="w-6 h-6 text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Account Role</p>
+                <p className="text-sm text-gray-500">Module / Role</p>
                 <p className="font-semibold text-gray-900 mt-1">
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    {user.role}
+                    {productModule} ({user.role})
                   </span>
                 </p>
               </div>
@@ -118,9 +105,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Role-Based Section Rendering */}
+        {/* Module-Based Section Rendering */}
         <div className="mt-8 space-y-6">
-          <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+          <RoleGuard allowedRoles={[MODULES.STUDENT]}>
             <div className="mb-6">
               <StudentDashboard />
             </div>
@@ -136,24 +123,24 @@ const Dashboard = () => {
             </div>
           </RoleGuard>
 
-          <RoleGuard allowedRoles={[ROLES.COLLEGE_ADMIN, ROLES.PLACEMENT_OFFICER, ROLES.SUPER_ADMIN]}>
+          <RoleGuard allowedRoles={[MODULES.ADMIN]}>
             <div className="mb-6">
               <CollegeAdminDashboard />
             </div>
           </RoleGuard>
 
-          <RoleGuard allowedRoles={[ROLES.COMPANY_HR, ROLES.RECRUITER]}>
+          <RoleGuard allowedRoles={[MODULES.COMPANY]}>
             <div className="mb-6">
               <RecruiterDashboard />
             </div>
           </RoleGuard>
 
-          <RoleGuard allowedRoles={[ROLES.SUPER_ADMIN, ROLES.COLLEGE_ADMIN, ROLES.COMPANY_HR]}>
+          <RoleGuard allowedRoles={[MODULES.ADMIN, MODULES.COMPANY]}>
             <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-emerald-800 flex items-center mb-2">
-                <Settings className="w-5 h-5 mr-2" /> Administrator Settings
+                <Settings className="w-5 h-5 mr-2" /> Settings
               </h3>
-              <p className="text-emerald-600 mb-4">Manage tenant preferences and user access.</p>
+              <p className="text-emerald-600 mb-4">Manage workspace preferences and account configurations.</p>
               <button
                 onClick={() => navigate('/admin/settings')}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium text-sm transition-colors"
